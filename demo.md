@@ -88,10 +88,10 @@ If the extension doesn't work as expected:
 
 ## Features Demonstrated
 
-- ✅ AI change detection
-- ✅ Automatic git staging and committing
-- ✅ Smart commit message generation
-- ✅ Chat interface for git operations
-- ✅ Status bar integration
-- ✅ Configuration options
-- ✅ Error handling and notifications
+- AI change detection
+- Automatic git staging and committing
+- Smart commit message generation
+- Chat interface for git operations
+- Status bar integration
+- Configuration options
+- Error handling and notifications

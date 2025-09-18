@@ -1,10 +1,10 @@
 # Cursor Aider Git Extension - Project Summary
 
-## 🎯 Project Overview
+## Project Overview
 
 I've successfully created a comprehensive VS Code extension that replicates the aider workflow by automatically committing AI-generated changes in Cursor IDE. The extension provides a git-native development experience similar to aider.
 
-## ✅ Completed Features
+## Completed Features
 
 ### 1. **Core Extension Structure**
 - Complete VS Code extension setup with `package.json`, TypeScript configuration, and build system
@@ -46,7 +46,7 @@ I've successfully created a comprehensive VS Code extension that replicates the 
 - User-friendly notifications and status messages
 - Graceful fallbacks for edge cases
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 src/
@@ -58,7 +58,7 @@ src/
 └── test/                 # Test files and configuration
 ```
 
-## 🚀 How to Use
+## How to Use
 
 1. **Install Dependencies**:
    ```bash
@@ -77,7 +77,7 @@ src/
    - Search for "Enable Auto-Commit"
    - Extension will automatically detect and commit AI changes
 
-## ⚙️ Configuration Options
+## Configuration Options
 
 ```json
 {
@@ -89,14 +89,14 @@ src/
 }
 ```
 
-## 🎯 Key Commands
+## Key Commands
 
 - `Cursor Aider Git: Enable Auto-Commit`
 - `Cursor Aider Git: Disable Auto-Commit`
 - `Cursor Aider Git: Commit Current Changes`
 - `Cursor Aider Git: Show Status`
 
-## 🔧 Technical Implementation
+## Technical Implementation
 
 ### AI Change Detection
 - Monitors `onDidChangeTextDocument` events
@@ -116,7 +116,7 @@ src/
 - VS Code theming and responsive design
 - Real-time feedback and notifications
 
-## 📋 Files Created
+## Files Created
 
 - `package.json` - Extension manifest and dependencies
 - `tsconfig.json` - TypeScript configuration
@@ -131,16 +131,16 @@ src/
 - `CHANGELOG.md` - Version history
 - `LICENSE` - MIT license
 
-## 🎉 Success Criteria Met
+## Success Criteria Met
 
-✅ **Intercept AI-Generated Changes**: Extension hooks into VS Code's API to detect AI completions  
-✅ **Automate Git Operations**: Uses Git API to stage and commit changes automatically  
-✅ **Custom Interface**: Provides chat interface for conversational workflow  
-✅ **Error Handling**: Robust error handling and rollback capabilities  
-✅ **Performance**: Configurable commit frequency to avoid cluttering git history  
-✅ **User Experience**: Seamless integration with VS Code/Cursor IDE  
+**Intercept AI-Generated Changes**: Extension hooks into VS Code's API to detect AI completions  
+**Automate Git Operations**: Uses Git API to stage and commit changes automatically  
+**Custom Interface**: Provides chat interface for conversational workflow  
+**Error Handling**: Robust error handling and rollback capabilities  
+**Performance**: Configurable commit frequency to avoid cluttering git history  
+**User Experience**: Seamless integration with VS Code/Cursor IDE  
 
-## 🚀 Next Steps
+## Next Steps
 
 The extension is ready for:
 1. **Testing**: Run in Extension Development Host to test functionality

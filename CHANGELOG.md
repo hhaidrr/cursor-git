@@ -17,12 +17,12 @@ All notable changes to the "cursor-aider-git" extension will be documented in th
 - VS Code extension marketplace compatibility
 
 ### Features
-- 🤖 AI Change Detection: Automatically detects when AI generates code changes
-- 📝 Smart Commit Messages: Generates descriptive commit messages
-- 💬 Chat Interface: Conversational interface for git operations
-- ⚙️ Configurable: Customize commit behavior and message templates
-- 🔄 Git Integration: Full Git workflow integration
-- 📊 Status Bar: Visual status indicators and quick access
+- AI Change Detection: Automatically detects when AI generates code changes
+- Smart Commit Messages: Generates descriptive commit messages
+- Chat Interface: Conversational interface for git operations
+- Configurable: Customize commit behavior and message templates
+- Git Integration: Full Git workflow integration
+- Status Bar: Visual status indicators and quick access
 
 ### Configuration
 - `cursorAiderGit.enabled`: Enable/disable auto-commit

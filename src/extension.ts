@@ -38,7 +38,7 @@ export function activate(context: vscode.ExtensionContext) {
                 vscode.window.showInformationMessage(`Committed: ${result.message}`);
                 chatInterface.addMessage({
                     type: 'assistant',
-                    content: `✅ Committed: ${result.message}`,
+                    content: `Committed: ${result.message}`,
                     timestamp: new Date()
                 });
             } else {

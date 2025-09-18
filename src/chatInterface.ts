@@ -88,14 +88,14 @@ export class ChatInterface {
             if (result.success) {
                 this.addMessage({
                     type: 'assistant',
-                    content: `✅ Successfully committed: "${result.message}"`,
+                    content: `Successfully committed: "${result.message}"`,
                     timestamp: new Date(),
                     commitHash: result.hash
                 });
             } else {
                 this.addMessage({
                     type: 'assistant',
-                    content: `❌ Commit failed: ${result.error}`,
+                    content: `Commit failed: ${result.error}`,
                     timestamp: new Date()
                 });
             }
@@ -103,7 +103,7 @@ export class ChatInterface {
             this.messages = this.messages.filter(m => !m.isTyping);
             this.addMessage({
                 type: 'assistant',
-                content: `❌ Error: ${error}`,
+                content: `Error: ${error}`,
                 timestamp: new Date()
             });
         }
@@ -114,14 +114,14 @@ export class ChatInterface {
             const status = await this.gitManager.getStatus();
             const modifiedFiles = await this.gitManager.getModifiedFiles();
             
-            let statusMessage = `📊 Git Status:\n`;
+            let statusMessage = `Git Status:\n`;
             statusMessage += `• Modified: ${status.modified.length}\n`;
             statusMessage += `• Created: ${status.created.length}\n`;
             statusMessage += `• Deleted: ${status.deleted.length}\n`;
             statusMessage += `• Staged: ${status.staged.length}\n`;
             
             if (modifiedFiles.length > 0) {
-                statusMessage += `\n📁 Modified Files:\n`;
+                statusMessage += `\nModified Files:\n`;
                 modifiedFiles.forEach(file => {
                     statusMessage += `• ${file}\n`;
                 });
@@ -135,7 +135,7 @@ export class ChatInterface {
         } catch (error) {
             this.addMessage({
                 type: 'assistant',
-                content: `❌ Error getting status: ${error}`,
+                content: `Error getting status: ${error}`,
                 timestamp: new Date()
             });
         }
@@ -147,7 +147,7 @@ export class ChatInterface {
             if (lastCommit) {
                 this.addMessage({
                     type: 'assistant',
-                    content: `📜 Last commit: ${lastCommit}`,
+                    content: `Last commit: ${lastCommit}`,
                     timestamp: new Date()
                 });
             } else {
@@ -160,7 +160,7 @@ export class ChatInterface {
         } catch (error) {
             this.addMessage({
                 type: 'assistant',
-                content: `❌ Error getting history: ${error}`,
+                content: `Error getting history: ${error}`,
                 timestamp: new Date()
             });
         }

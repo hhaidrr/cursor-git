@@ -137,7 +137,7 @@ export class ChangeDetector {
         
         if (showNotifications) {
             vscode.window.showInformationMessage(
-                `🤖 AI Change Committed: ${message}`,
+                `AI Change Committed: ${message}`,
                 'View Changes',
                 'Revert'
             ).then(selection => {
