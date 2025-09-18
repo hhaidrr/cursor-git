@@ -22,21 +22,21 @@ export class StatusBarManager {
     }
 
     private async updateStatusFromConfig(): Promise<void> {
-        const config = vscode.workspace.getConfiguration('cursorAiderGit');
+        const config = vscode.workspace.getConfiguration('cursorGit');
         this.isEnabled = config.get('enabled', true);
         this.updateStatusBarItem();
     }
 
     private updateStatusBarItem(): void {
         if (this.isEnabled) {
-            this.statusBarItem.text = '$(git-commit) Aider Git';
-            this.statusBarItem.tooltip = 'Cursor Aider Git: Auto-commit enabled\nClick to disable';
-            this.statusBarItem.command = 'cursorAiderGit.disable';
+        this.statusBarItem.text = '$(git-commit) Cursor Git';
+        this.statusBarItem.tooltip = 'Cursor Git: Auto-commit enabled\nClick to disable';
+        this.statusBarItem.command = 'cursorGit.disable';
             this.statusBarItem.backgroundColor = undefined;
         } else {
-            this.statusBarItem.text = '$(git-commit) Aider Git (off)';
-            this.statusBarItem.tooltip = 'Cursor Aider Git: Auto-commit disabled\nClick to enable';
-            this.statusBarItem.command = 'cursorAiderGit.enable';
+            this.statusBarItem.text = '$(git-commit) Cursor Git (off)';
+            this.statusBarItem.tooltip = 'Cursor Git: Auto-commit disabled\nClick to enable';
+            this.statusBarItem.command = 'cursorGit.enable';
             this.statusBarItem.backgroundColor = new vscode.ThemeColor('statusBarItem.warningBackground');
         }
     }

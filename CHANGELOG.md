@@ -1,11 +1,11 @@
 # Change Log
 
-All notable changes to the "cursor-aider-git" extension will be documented in this file.
+All notable changes to the "cursor-git" extension will be documented in this file.
 
 ## [0.1.0] - 2024-01-XX
 
 ### Added
-- Initial release of Cursor Aider Git extension
+- Initial release of Cursor Git extension
 - Automatic detection of AI-generated code changes
 - Smart commit message generation based on file types and changes
 - Configurable commit behavior (immediate, onSave, manual)
@@ -25,14 +25,14 @@ All notable changes to the "cursor-aider-git" extension will be documented in th
 - Status Bar: Visual status indicators and quick access
 
 ### Configuration
-- `cursorAiderGit.enabled`: Enable/disable auto-commit
-- `cursorAiderGit.commitMessageTemplate`: Custom commit message template
-- `cursorAiderGit.autoStage`: Automatically stage files before commit
-- `cursorAiderGit.commitFrequency`: When to commit changes
-- `cursorAiderGit.excludePatterns`: File patterns to exclude from commits
+- `cursorGit.enabled`: Enable/disable auto-commit
+- `cursorGit.commitMessageTemplate`: Custom commit message template
+- `cursorGit.autoStage`: Automatically stage files before commit
+- `cursorGit.commitFrequency`: When to commit changes
+- `cursorGit.excludePatterns`: File patterns to exclude from commits
 
 ### Commands
-- `Cursor Aider Git: Enable Auto-Commit`
-- `Cursor Aider Git: Disable Auto-Commit`
-- `Cursor Aider Git: Commit Current Changes`
-- `Cursor Aider Git: Show Status`
+- `Cursor Git: Enable Auto-Commit`
+- `Cursor Git: Disable Auto-Commit`
+- `Cursor Git: Commit Current Changes`
+- `Cursor Git: Show Status`

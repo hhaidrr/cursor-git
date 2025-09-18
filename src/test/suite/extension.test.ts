@@ -5,17 +5,17 @@ suite('Extension Test Suite', () => {
     vscode.window.showInformationMessage('Start all tests.');
 
     test('Extension should be present', () => {
-        assert.ok(vscode.extensions.getExtension('cursor-aider.cursor-aider-git'));
+        assert.ok(vscode.extensions.getExtension('cursor-git.cursor-git'));
     });
 
     test('Commands should be registered', async () => {
         const commands = await vscode.commands.getCommands(true);
         
         const expectedCommands = [
-            'cursorAiderGit.enable',
-            'cursorAiderGit.disable',
-            'cursorAiderGit.commitNow',
-            'cursorAiderGit.showStatus'
+            'cursorGit.enable',
+            'cursorGit.disable',
+            'cursorGit.commitNow',
+            'cursorGit.showStatus'
         ];
 
         for (const command of expectedCommands) {
@@ -24,7 +24,7 @@ suite('Extension Test Suite', () => {
     });
 
     test('Configuration should have default values', () => {
-        const config = vscode.workspace.getConfiguration('cursorAiderGit');
+        const config = vscode.workspace.getConfiguration('cursorGit');
         
         assert.strictEqual(config.get('enabled'), true);
         assert.strictEqual(config.get('commitMessageTemplate'), 'AI: {description}');

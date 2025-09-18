@@ -17,8 +17,8 @@ export class ChatInterface {
         }
 
         this.panel = vscode.window.createWebviewPanel(
-            'cursorAiderGitChat',
-            'Cursor Aider Git Chat',
+            'cursorGitChat',
+            'Cursor Git Chat',
             vscode.ViewColumn.Two,
             {
                 enableScripts: true,
@@ -54,7 +54,7 @@ export class ChatInterface {
         // Add welcome message
         this.addMessage({
             type: 'system',
-            content: 'Welcome to Cursor Aider Git! I\'ll help you manage AI-generated changes with automatic git commits.',
+            content: 'Welcome to Cursor Git! I\'ll help you manage AI-generated changes with automatic git commits.',
             timestamp: new Date()
         });
     }
@@ -180,7 +180,7 @@ export class ChatInterface {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cursor Aider Git Chat</title>
+    <title>Cursor Git Chat</title>
     <style>
         body {
             font-family: var(--vscode-font-family);

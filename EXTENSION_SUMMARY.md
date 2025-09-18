@@ -1,4 +1,4 @@
-# Cursor Aider Git Extension - Project Summary
+# Cursor Git Extension - Project Summary
 
 ## Project Overview
 
@@ -81,20 +81,20 @@ src/
 
 ```json
 {
-  "cursorAiderGit.enabled": true,
-  "cursorAiderGit.commitMessageTemplate": "AI: {description}",
-  "cursorAiderGit.autoStage": true,
-  "cursorAiderGit.commitFrequency": "immediate",
-  "cursorAiderGit.excludePatterns": ["*.log", "*.tmp", "node_modules/**"]
+  "cursorGit.enabled": true,
+  "cursorGit.commitMessageTemplate": "AI: {description}",
+  "cursorGit.autoStage": true,
+  "cursorGit.commitFrequency": "immediate",
+  "cursorGit.excludePatterns": ["*.log", "*.tmp", "node_modules/**"]
 }
 ```
 
 ## Key Commands
 
-- `Cursor Aider Git: Enable Auto-Commit`
-- `Cursor Aider Git: Disable Auto-Commit`
-- `Cursor Aider Git: Commit Current Changes`
-- `Cursor Aider Git: Show Status`
+- `Cursor Git: Enable Auto-Commit`
+- `Cursor Git: Disable Auto-Commit`
+- `Cursor Git: Commit Current Changes`
+- `Cursor Git: Show Status`
 
 ## Technical Implementation
 

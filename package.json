@@ -1,9 +1,9 @@
 {
-  "name": "cursor-aider-git",
-  "displayName": "Cursor Aider Git",
+  "name": "cursor-git",
+  "displayName": "Cursor Git",
   "description": "Automatically commit AI-generated changes in Cursor IDE",
   "version": "0.1.0",
-  "publisher": "cursor-aider",
+  "publisher": "cursor-git",
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -18,51 +18,51 @@
   "contributes": {
     "commands": [
       {
-        "command": "cursorAiderGit.enable",
+        "command": "cursorGit.enable",
         "title": "Enable Auto-Commit",
-        "category": "Cursor Aider Git"
+        "category": "Cursor Git"
       },
       {
-        "command": "cursorAiderGit.disable",
+        "command": "cursorGit.disable",
         "title": "Disable Auto-Commit",
-        "category": "Cursor Aider Git"
+        "category": "Cursor Git"
       },
       {
-        "command": "cursorAiderGit.commitNow",
+        "command": "cursorGit.commitNow",
         "title": "Commit Current Changes",
-        "category": "Cursor Aider Git"
+        "category": "Cursor Git"
       },
       {
-        "command": "cursorAiderGit.showStatus",
+        "command": "cursorGit.showStatus",
         "title": "Show Status",
-        "category": "Cursor Aider Git"
+        "category": "Cursor Git"
       }
     ],
     "configuration": {
-      "title": "Cursor Aider Git",
+      "title": "Cursor Git",
       "properties": {
-        "cursorAiderGit.enabled": {
+        "cursorGit.enabled": {
           "type": "boolean",
           "default": true,
           "description": "Enable automatic committing of AI-generated changes"
         },
-        "cursorAiderGit.commitMessageTemplate": {
+        "cursorGit.commitMessageTemplate": {
           "type": "string",
           "default": "AI: {description}",
           "description": "Template for commit messages. Use {description} for change description"
         },
-        "cursorAiderGit.autoStage": {
+        "cursorGit.autoStage": {
           "type": "boolean",
           "default": true,
           "description": "Automatically stage modified files before committing"
         },
-        "cursorAiderGit.commitFrequency": {
+        "cursorGit.commitFrequency": {
           "type": "string",
           "enum": ["immediate", "onSave", "manual"],
           "default": "immediate",
           "description": "When to commit changes"
         },
-        "cursorAiderGit.excludePatterns": {
+        "cursorGit.excludePatterns": {
           "type": "array",
           "default": ["*.log", "*.tmp", "node_modules/**"],
           "description": "File patterns to exclude from auto-commit"
@@ -72,25 +72,25 @@
     "views": {
       "explorer": [
         {
-          "id": "cursorAiderGitView",
-          "name": "Cursor Aider Git",
-          "when": "cursorAiderGit.enabled"
+        "id": "cursorGitView",
+        "name": "Cursor Git",
+        "when": "cursorGit.enabled"
         }
       ]
     },
     "menus": {
       "scm/title": [
         {
-          "command": "cursorAiderGit.commitNow",
-          "when": "cursorAiderGit.enabled",
+        "command": "cursorGit.commitNow",
+        "when": "cursorGit.enabled",
           "group": "navigation"
         }
       ],
       "editor/context": [
         {
-          "command": "cursorAiderGit.commitNow",
-          "when": "cursorAiderGit.enabled",
-          "group": "cursorAiderGit"
+        "command": "cursorGit.commitNow",
+        "when": "cursorGit.enabled",
+          "group": "cursorGit"
         }
       ]
     }

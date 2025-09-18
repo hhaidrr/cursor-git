@@ -17,7 +17,7 @@ export class ChangeDetector {
 
         // Set up configuration change listener
         const configChangeListener = vscode.workspace.onDidChangeConfiguration(e => {
-            if (e.affectsConfiguration('cursorAiderGit.enabled')) {
+            if (e.affectsConfiguration('cursorGit.enabled')) {
                 this.updateEnabledState();
             }
         });
@@ -59,12 +59,12 @@ export class ChangeDetector {
     }
 
     private async updateEnabledState(): Promise<void> {
-        const config = vscode.workspace.getConfiguration('cursorAiderGit');
+        const config = vscode.workspace.getConfiguration('cursorGit');
         this.isEnabled = config.get('enabled', true);
     }
 
     private shouldAutoCommit(): boolean {
-        const config = vscode.workspace.getConfiguration('cursorAiderGit');
+        const config = vscode.workspace.getConfiguration('cursorGit');
         const frequency = config.get<string>('commitFrequency', 'immediate');
         
         switch (frequency) {
@@ -132,7 +132,7 @@ export class ChangeDetector {
     }
 
     private showCommitNotification(message: string): void {
-        const config = vscode.workspace.getConfiguration('cursorAiderGit');
+        const config = vscode.workspace.getConfiguration('cursorGit');
         const showNotifications = config.get('showNotifications', true);
         
         if (showNotifications) {

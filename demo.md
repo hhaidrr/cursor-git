@@ -1,6 +1,6 @@
-# Cursor Aider Git Demo
+# Cursor Git Demo
 
-This demo shows how to use the Cursor Aider Git extension to automatically commit AI-generated changes.
+This demo shows how to use the Cursor Git extension to automatically commit AI-generated changes.
 
 ## Setup
 
@@ -28,7 +28,7 @@ This demo shows how to use the Cursor Aider Git extension to automatically commi
 
 1. Open the Command Palette (`Ctrl+Shift+P`)
 2. Search for "Enable Auto-Commit"
-3. Select "Cursor Aider Git: Enable Auto-Commit"
+3. Select "Cursor Git: Enable Auto-Commit"
 4. You should see a status bar indicator showing the extension is active
 
 ### 2. Test AI Change Detection
@@ -45,7 +45,7 @@ This demo shows how to use the Cursor Aider Git extension to automatically commi
 ### 3. Use the Chat Interface
 
 1. Open the Command Palette (`Ctrl+Shift+P`)
-2. Search for "Cursor Aider Git Chat" or look for the chat icon
+2. Search for "Cursor Git Chat" or look for the chat icon
 3. The chat interface will open in a side panel
 4. You can:
    - Type commit messages and commit manually
@@ -55,7 +55,7 @@ This demo shows how to use the Cursor Aider Git extension to automatically commi
 ### 4. Test Configuration
 
 1. Open Settings (`Ctrl+,`)
-2. Search for "cursorAiderGit"
+2. Search for "cursorGit"
 3. Try different configurations:
    - Change commit frequency to "manual"
    - Modify the commit message template
@@ -65,9 +65,9 @@ This demo shows how to use the Cursor Aider Git extension to automatically commi
 
 Try these commands from the Command Palette:
 
-- `Cursor Aider Git: Disable Auto-Commit` - Turn off automatic commits
-- `Cursor Aider Git: Commit Current Changes` - Manually commit changes
-- `Cursor Aider Git: Show Status` - Display current configuration
+- `Cursor Git: Disable Auto-Commit` - Turn off automatic commits
+- `Cursor Git: Commit Current Changes` - Manually commit changes
+- `Cursor Git: Show Status` - Display current configuration
 
 ## Expected Behavior
 

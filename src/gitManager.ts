@@ -49,7 +49,7 @@ export class GitManager {
             }
 
             // Filter out files that match exclude patterns
-            const config = vscode.workspace.getConfiguration('cursorAiderGit');
+            const config = vscode.workspace.getConfiguration('cursorGit');
             const excludePatterns = config.get<string[]>('excludePatterns', []);
             const filteredFiles = this.filterExcludedFiles(files, excludePatterns);
 
@@ -111,7 +111,7 @@ export class GitManager {
                 };
             }
 
-            const config = vscode.workspace.getConfiguration('cursorAiderGit');
+            const config = vscode.workspace.getConfiguration('cursorGit');
             const autoStage = config.get('autoStage', true);
 
             if (autoStage) {
@@ -137,7 +137,7 @@ export class GitManager {
     }
 
     private async generateCommitMessage(files: string[]): Promise<string> {
-        const config = vscode.workspace.getConfiguration('cursorAiderGit');
+        const config = vscode.workspace.getConfiguration('cursorGit');
         const template = config.get('commitMessageTemplate', 'AI: {description}');
 
         // Analyze file changes to generate a description

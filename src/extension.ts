@@ -10,7 +10,7 @@ let chatInterface: ChatInterface;
 let statusBarManager: StatusBarManager;
 
 export function activate(context: vscode.ExtensionContext) {
-    console.log('Cursor Aider Git extension is now active!');
+    console.log('Cursor Git extension is now active!');
 
     // Initialize components
     gitManager = new GitManager();
@@ -19,19 +19,19 @@ export function activate(context: vscode.ExtensionContext) {
     statusBarManager = new StatusBarManager();
 
     // Register commands
-    const enableCommand = vscode.commands.registerCommand('cursorAiderGit.enable', () => {
-        vscode.workspace.getConfiguration('cursorAiderGit').update('enabled', true, vscode.ConfigurationTarget.Global);
+    const enableCommand = vscode.commands.registerCommand('cursorGit.enable', () => {
+        vscode.workspace.getConfiguration('cursorGit').update('enabled', true, vscode.ConfigurationTarget.Global);
         statusBarManager.updateStatus(true);
-        vscode.window.showInformationMessage('Cursor Aider Git: Auto-commit enabled');
+        vscode.window.showInformationMessage('Cursor Git: Auto-commit enabled');
     });
 
-    const disableCommand = vscode.commands.registerCommand('cursorAiderGit.disable', () => {
-        vscode.workspace.getConfiguration('cursorAiderGit').update('enabled', false, vscode.ConfigurationTarget.Global);
+    const disableCommand = vscode.commands.registerCommand('cursorGit.disable', () => {
+        vscode.workspace.getConfiguration('cursorGit').update('enabled', false, vscode.ConfigurationTarget.Global);
         statusBarManager.updateStatus(false);
-        vscode.window.showInformationMessage('Cursor Aider Git: Auto-commit disabled');
+        vscode.window.showInformationMessage('Cursor Git: Auto-commit disabled');
     });
 
-    const commitNowCommand = vscode.commands.registerCommand('cursorAiderGit.commitNow', async () => {
+    const commitNowCommand = vscode.commands.registerCommand('cursorGit.commitNow', async () => {
         try {
             const result = await gitManager.commitChanges();
             if (result.success) {
@@ -49,13 +49,13 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
 
-    const showStatusCommand = vscode.commands.registerCommand('cursorAiderGit.showStatus', () => {
-        const config = vscode.workspace.getConfiguration('cursorAiderGit');
+    const showStatusCommand = vscode.commands.registerCommand('cursorGit.showStatus', () => {
+        const config = vscode.workspace.getConfiguration('cursorGit');
         const isEnabled = config.get('enabled', true);
         const commitFrequency = config.get('commitFrequency', 'immediate');
         
         vscode.window.showInformationMessage(
-            `Cursor Aider Git Status:\n` +
+            `Cursor Git Status:\n` +
             `Enabled: ${isEnabled ? 'Yes' : 'No'}\n` +
             `Commit Frequency: ${commitFrequency}\n` +
             `Auto Stage: ${config.get('autoStage', true) ? 'Yes' : 'No'}`
@@ -73,11 +73,11 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Show welcome message
     vscode.window.showInformationMessage(
-        'Cursor Aider Git is ready! Use the command palette to enable auto-commit.',
+        'Cursor Git is ready! Use the command palette to enable auto-commit.',
         'Enable Auto-Commit'
     ).then(selection => {
         if (selection === 'Enable Auto-Commit') {
-            vscode.commands.executeCommand('cursorAiderGit.enable');
+            vscode.commands.executeCommand('cursorGit.enable');
         }
     });
 }

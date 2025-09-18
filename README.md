@@ -1,4 +1,4 @@
-# Cursor Aider Git
+# Cursor Git
 
 A VS Code extension that automatically commits AI-generated changes in Cursor IDE, similar to the aider workflow.
 
@@ -28,10 +28,10 @@ A VS Code extension that automatically commits AI-generated changes in Cursor ID
 
 ### Commands
 
-- `Cursor Aider Git: Enable Auto-Commit` - Enable automatic committing
-- `Cursor Aider Git: Disable Auto-Commit` - Disable automatic committing
-- `Cursor Aider Git: Commit Current Changes` - Manually commit current changes
-- `Cursor Aider Git: Show Status` - Display current configuration and status
+- `Cursor Git: Enable Auto-Commit` - Enable automatic committing
+- `Cursor Git: Disable Auto-Commit` - Disable automatic committing
+- `Cursor Git: Commit Current Changes` - Manually commit current changes
+- `Cursor Git: Show Status` - Display current configuration and status
 
 ### Configuration
 
@@ -39,11 +39,11 @@ The extension can be configured through VS Code settings:
 
 ```json
 {
-  "cursorAiderGit.enabled": true,
-  "cursorAiderGit.commitMessageTemplate": "AI: {description}",
-  "cursorAiderGit.autoStage": true,
-  "cursorAiderGit.commitFrequency": "immediate",
-  "cursorAiderGit.excludePatterns": ["*.log", "*.tmp", "node_modules/**"]
+  "cursorGit.enabled": true,
+  "cursorGit.commitMessageTemplate": "AI: {description}",
+  "cursorGit.autoStage": true,
+  "cursorGit.commitFrequency": "immediate",
+  "cursorGit.excludePatterns": ["*.log", "*.tmp", "node_modules/**"]
 }
 ```
 
