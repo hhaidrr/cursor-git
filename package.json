@@ -1,0 +1,122 @@
+{
+  "name": "cursor-aider-git",
+  "displayName": "Cursor Aider Git",
+  "description": "Automatically commit AI-generated changes in Cursor IDE",
+  "version": "0.1.0",
+  "publisher": "cursor-aider",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Other",
+    "SCM Providers"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "cursorAiderGit.enable",
+        "title": "Enable Auto-Commit",
+        "category": "Cursor Aider Git"
+      },
+      {
+        "command": "cursorAiderGit.disable",
+        "title": "Disable Auto-Commit",
+        "category": "Cursor Aider Git"
+      },
+      {
+        "command": "cursorAiderGit.commitNow",
+        "title": "Commit Current Changes",
+        "category": "Cursor Aider Git"
+      },
+      {
+        "command": "cursorAiderGit.showStatus",
+        "title": "Show Status",
+        "category": "Cursor Aider Git"
+      }
+    ],
+    "configuration": {
+      "title": "Cursor Aider Git",
+      "properties": {
+        "cursorAiderGit.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable automatic committing of AI-generated changes"
+        },
+        "cursorAiderGit.commitMessageTemplate": {
+          "type": "string",
+          "default": "AI: {description}",
+          "description": "Template for commit messages. Use {description} for change description"
+        },
+        "cursorAiderGit.autoStage": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically stage modified files before committing"
+        },
+        "cursorAiderGit.commitFrequency": {
+          "type": "string",
+          "enum": ["immediate", "onSave", "manual"],
+          "default": "immediate",
+          "description": "When to commit changes"
+        },
+        "cursorAiderGit.excludePatterns": {
+          "type": "array",
+          "default": ["*.log", "*.tmp", "node_modules/**"],
+          "description": "File patterns to exclude from auto-commit"
+        }
+      }
+    },
+    "views": {
+      "explorer": [
+        {
+          "id": "cursorAiderGitView",
+          "name": "Cursor Aider Git",
+          "when": "cursorAiderGit.enabled"
+        }
+      ]
+    },
+    "menus": {
+      "scm/title": [
+        {
+          "command": "cursorAiderGit.commitNow",
+          "when": "cursorAiderGit.enabled",
+          "group": "navigation"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "cursorAiderGit.commitNow",
+          "when": "cursorAiderGit.enabled",
+          "group": "cursorAiderGit"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.74.0",
+    "@types/node": "16.x",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
+    "eslint": "^8.28.0",
+    "typescript": "^4.9.4",
+    "@vscode/test-electron": "^2.3.0",
+    "mocha": "^10.2.0",
+    "@types/mocha": "^10.0.6",
+    "glob": "^8.1.0",
+    "@types/glob": "^8.1.0"
+  },
+  "dependencies": {
+    "simple-git": "^3.19.1"
+  }
+}

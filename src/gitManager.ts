@@ -1,0 +1,226 @@
+import * as vscode from 'vscode';
+import { simpleGit, SimpleGit, StatusResult } from 'simple-git';
+import * as path from 'path';
+
+export interface CommitResult {
+    success: boolean;
+    message: string;
+    error?: string;
+    hash?: string;
+}
+
+export class GitManager {
+    private git: SimpleGit;
+    private workspaceRoot: string;
+
+    constructor() {
+        this.workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '';
+        this.git = simpleGit(this.workspaceRoot);
+    }
+
+    async getStatus(): Promise<StatusResult> {
+        try {
+            return await this.git.status();
+        } catch (error) {
+            console.error('Error getting git status:', error);
+            throw error;
+        }
+    }
+
+    async getModifiedFiles(): Promise<string[]> {
+        try {
+            const status = await this.getStatus();
+            return [
+                ...status.modified,
+                ...status.created,
+                ...status.renamed.map(r => r.to),
+                ...status.deleted
+            ];
+        } catch (error) {
+            console.error('Error getting modified files:', error);
+            return [];
+        }
+    }
+
+    async stageFiles(files: string[]): Promise<boolean> {
+        try {
+            if (files.length === 0) {
+                return true;
+            }
+
+            // Filter out files that match exclude patterns
+            const config = vscode.workspace.getConfiguration('cursorAiderGit');
+            const excludePatterns = config.get<string[]>('excludePatterns', []);
+            const filteredFiles = this.filterExcludedFiles(files, excludePatterns);
+
+            if (filteredFiles.length === 0) {
+                console.log('No files to stage after filtering');
+                return true;
+            }
+
+            await this.git.add(filteredFiles);
+            console.log(`Staged ${filteredFiles.length} files:`, filteredFiles);
+            return true;
+        } catch (error) {
+            console.error('Error staging files:', error);
+            return false;
+        }
+    }
+
+    async commitChanges(customMessage?: string): Promise<CommitResult> {
+        try {
+            const status = await this.getStatus();
+            const stagedFiles = status.staged;
+
+            if (stagedFiles.length === 0) {
+                return {
+                    success: false,
+                    message: 'No staged changes to commit',
+                    error: 'No staged changes'
+                };
+            }
+
+            const message = customMessage || await this.generateCommitMessage(stagedFiles);
+            
+            const commitResult = await this.git.commit(message);
+            
+            return {
+                success: true,
+                message: message,
+                hash: commitResult.commit
+            };
+        } catch (error) {
+            console.error('Error committing changes:', error);
+            return {
+                success: false,
+                message: '',
+                error: error instanceof Error ? error.message : 'Unknown error'
+            };
+        }
+    }
+
+    async stageAndCommit(customMessage?: string): Promise<CommitResult> {
+        try {
+            const modifiedFiles = await this.getModifiedFiles();
+            
+            if (modifiedFiles.length === 0) {
+                return {
+                    success: false,
+                    message: 'No changes to commit',
+                    error: 'No modified files'
+                };
+            }
+
+            const config = vscode.workspace.getConfiguration('cursorAiderGit');
+            const autoStage = config.get('autoStage', true);
+
+            if (autoStage) {
+                const staged = await this.stageFiles(modifiedFiles);
+                if (!staged) {
+                    return {
+                        success: false,
+                        message: '',
+                        error: 'Failed to stage files'
+                    };
+                }
+            }
+
+            return await this.commitChanges(customMessage);
+        } catch (error) {
+            console.error('Error in stage and commit:', error);
+            return {
+                success: false,
+                message: '',
+                error: error instanceof Error ? error.message : 'Unknown error'
+            };
+        }
+    }
+
+    private async generateCommitMessage(files: string[]): Promise<string> {
+        const config = vscode.workspace.getConfiguration('cursorAiderGit');
+        const template = config.get('commitMessageTemplate', 'AI: {description}');
+
+        // Analyze file changes to generate a description
+        const description = await this.analyzeChanges(files);
+        
+        return template.replace('{description}', description);
+    }
+
+    private async analyzeChanges(files: string[]): Promise<string> {
+        try {
+            // Get file extensions to understand the type of changes
+            const extensions = files.map(f => path.extname(f)).filter(ext => ext);
+            const uniqueExtensions = [...new Set(extensions)];
+
+            // Count different types of files
+            const stats = {
+                total: files.length,
+                extensions: uniqueExtensions,
+                hasNewFiles: files.some(f => f.includes('(new file)')),
+                hasDeletedFiles: files.some(f => f.includes('(deleted)'))
+            };
+
+            // Generate description based on file types and changes
+            let description = '';
+            
+            if (stats.hasNewFiles && stats.hasDeletedFiles) {
+                description = 'Added and removed files';
+            } else if (stats.hasNewFiles) {
+                description = 'Added new files';
+            } else if (stats.hasDeletedFiles) {
+                description = 'Removed files';
+            } else if (uniqueExtensions.length === 1) {
+                const ext = uniqueExtensions[0];
+                description = `Updated ${ext} files`;
+            } else if (uniqueExtensions.length > 1) {
+                description = 'Updated multiple file types';
+            } else {
+                description = 'Updated files';
+            }
+
+            // Add file count if more than 1
+            if (stats.total > 1) {
+                description += ` (${stats.total} files)`;
+            }
+
+            return description;
+        } catch (error) {
+            console.error('Error analyzing changes:', error);
+            return 'AI-generated changes';
+        }
+    }
+
+    private filterExcludedFiles(files: string[], excludePatterns: string[]): string[] {
+        if (excludePatterns.length === 0) {
+            return files;
+        }
+
+        return files.filter(file => {
+            return !excludePatterns.some(pattern => {
+                // Simple glob pattern matching
+                const regex = new RegExp(pattern.replace(/\*/g, '.*').replace(/\?/g, '.'));
+                return regex.test(file);
+            });
+        });
+    }
+
+    async getLastCommit(): Promise<string | null> {
+        try {
+            const log = await this.git.log({ maxCount: 1 });
+            return log.latest?.hash || null;
+        } catch (error) {
+            console.error('Error getting last commit:', error);
+            return null;
+        }
+    }
+
+    async revertLastCommit(): Promise<boolean> {
+        try {
+            await this.git.reset(['--soft', 'HEAD~1']);
+            return true;
+        } catch (error) {
+            console.error('Error reverting last commit:', error);
+            return false;
+        }
+    }
+}
