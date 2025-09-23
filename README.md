@@ -43,7 +43,8 @@ The extension can be configured through VS Code settings:
   "cursorGit.commitMessageTemplate": "AI: {description}",
   "cursorGit.autoStage": true,
   "cursorGit.commitFrequency": "immediate",
-  "cursorGit.excludePatterns": ["*.log", "*.tmp", "node_modules/**"]
+  "cursorGit.excludePatterns": ["*.log", "*.tmp", "node_modules/**"],
+  "cursorGit.aiAuthorSuffix": "(agent)"
 }
 ```
 
@@ -54,6 +55,7 @@ The extension can be configured through VS Code settings:
 - **autoStage**: Automatically stage modified files before committing
 - **commitFrequency**: When to commit changes (`immediate`, `onSave`, `manual`)
 - **excludePatterns**: File patterns to exclude from auto-commit
+- **aiAuthorSuffix**: Suffix to append to author name for AI commits (default: "(agent)")
 
 ## How It Works
 

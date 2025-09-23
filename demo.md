@@ -60,6 +60,7 @@ This demo shows how to use the Cursor Git extension to automatically commit AI-g
    - Change commit frequency to "manual"
    - Modify the commit message template
    - Add file exclusion patterns
+   - Customize the AI author suffix (e.g., "(agent)", "(AI)", "(bot)")
 
 ### 5. Test Commands
 
@@ -73,6 +74,7 @@ Try these commands from the Command Palette:
 
 - **Automatic Commits**: When you make changes and save, the extension should automatically commit them
 - **Smart Messages**: Commit messages should describe the type of changes (e.g., "AI: Updated TypeScript files (3 files)")
+- **AI Author Indication**: Commits made by AI will show the author as "Your Name (agent)" to distinguish them from human commits
 - **Status Bar**: The status bar should show the extension status
 - **Notifications**: You should see notifications when commits are made
 - **Chat Interface**: The chat should respond to your commands and show git status

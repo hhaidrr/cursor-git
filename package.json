@@ -66,6 +66,11 @@
           "type": "array",
           "default": ["*.log", "*.tmp", "node_modules/**"],
           "description": "File patterns to exclude from auto-commit"
+        },
+        "cursorGit.aiAuthorSuffix": {
+          "type": "string",
+          "default": "(agent)",
+          "description": "Suffix to append to author name for AI commits"
         }
       }
     },

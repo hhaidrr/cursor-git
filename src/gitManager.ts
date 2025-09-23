@@ -27,6 +27,42 @@ export class GitManager {
         }
     }
 
+    async getCurrentAuthor(): Promise<{name: string, email: string}> {
+        try {
+            const name = await this.git.getConfig('user.name');
+            const email = await this.git.getConfig('user.email');
+            return {
+                name: name.value || 'Unknown',
+                email: email.value || 'unknown@example.com'
+            };
+        } catch (error) {
+            console.error('Error getting git author info:', error);
+            return {
+                name: 'Unknown',
+                email: 'unknown@example.com'
+            };
+        }
+    }
+
+    private async getAIAuthor(): Promise<{name: string, email: string}> {
+        try {
+            const config = vscode.workspace.getConfiguration('cursorGit');
+            const suffix = config.get('aiAuthorSuffix', '(agent)');
+            const currentAuthor = await this.getCurrentAuthor();
+            
+            return {
+                name: `${currentAuthor.name} ${suffix}`,
+                email: currentAuthor.email
+            };
+        } catch (error) {
+            console.error('Error getting AI author info:', error);
+            return {
+                name: 'AI Assistant (agent)',
+                email: 'ai@example.com'
+            };
+        }
+    }
+
     async getModifiedFiles(): Promise<string[]> {
         try {
             const status = await this.getStatus();
@@ -81,8 +117,11 @@ export class GitManager {
             }
 
             const message = customMessage || await this.generateCommitMessage(stagedFiles);
+            const aiAuthor = await this.getAIAuthor();
             
-            const commitResult = await this.git.commit(message);
+            const commitResult = await this.git.commit(message, undefined, {
+                '--author': `${aiAuthor.name} <${aiAuthor.email}>`
+            });
             
             return {
                 success: true,

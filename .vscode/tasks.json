@@ -9,7 +9,8 @@
                 "panel": "shared",
                 "reveal": "never"
             },
-            "problemMatcher": "$tsc"
+            "problemMatcher": "$tsc",
+            "label": "npm: compile"
         },
         {
             "type": "npm",
