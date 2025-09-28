@@ -46,6 +46,11 @@
         "command": "cursorGit.testAISample",
         "title": "Test AI with Sample Files",
         "category": "Cursor Git"
+      },
+      {
+        "command": "cursorGit.checkCursorAI",
+        "title": "Check Cursor AI Commands",
+        "category": "Cursor Git"
       }
     ],
     "configuration": {
