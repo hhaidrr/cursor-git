@@ -110,7 +110,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://git@github.com:hhaidrr/cursor-git.git
+    "url": "https://git@github.com:hhaidrr/cursor-git.git"
   },
   "devDependencies": {
     "@types/vscode": "^1.74.0",
