@@ -200,22 +200,33 @@ export class GitManager {
             if (status.staged.length === 0) {
                 // Stage the modified files
                 const modifiedFiles = await this.getModifiedFiles();
+                if (modifiedFiles.length === 0) {
+                    throw new Error('No modified files to stage');
+                }
                 await this.stageFiles(modifiedFiles);
             }
+
+            console.log('Staged files for AI analysis:', status.staged);
 
             // Try to execute the Cursor AI command
             const result = await vscode.commands.executeCommand('cursor.generateGitCommitMessage');
             
             if (typeof result === 'string' && result.trim()) {
+                console.log('Cursor AI generated message:', result.trim());
                 return result.trim();
             }
 
-            // If direct command doesn't work, we might need to wait for user interaction
-            // or use a different approach
-            throw new Error('Cursor AI command did not return a message');
+            // If the command doesn't return a string, it might not be available
+            throw new Error('Cursor AI command not available or returned no message');
             
         } catch (error) {
             console.error('Error with Cursor AI commit generation:', error);
+            
+            // Check if it's a "No diffs found" error specifically
+            if (error instanceof Error && error.message.includes('No diffs found')) {
+                throw new Error('No staged changes found for AI analysis. Please ensure files are staged and contain changes.');
+            }
+            
             throw error;
         }
     }
