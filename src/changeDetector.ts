@@ -303,6 +303,71 @@ export class ChangeDetector {
             }
         }
 
+        // 6. Code structure patterns (AI often generates well-formatted code)
+        if (event.contentChanges && event.contentChanges.length > 0) {
+            const hasStructuredCode = event.contentChanges.some((change: any) => {
+                if (!change.text) return false;
+                const text = change.text;
+                return (
+                    // Proper indentation patterns
+                    text.includes('    ') && text.includes('\n') ||
+                    // JSDoc comments
+                    text.includes('/**') ||
+                    // Type annotations
+                    text.includes(': ') ||
+                    // Import statements
+                    text.includes('import ') ||
+                    // Export statements
+                    text.includes('export ')
+                );
+            });
+            
+            if (hasStructuredCode) {
+                confidence += 0.15;
+                console.log('Structured code AI detection');
+            }
+        }
+
+        // 7. Comment patterns (AI often adds explanatory comments)
+        if (event.contentChanges && event.contentChanges.length > 0) {
+            const hasComments = event.contentChanges.some((change: any) => {
+                if (!change.text) return false;
+                const text = change.text;
+                const commentLines = text.split('\n').filter((line: string) => 
+                    line.trim().startsWith('//') || 
+                    line.trim().startsWith('/*') || 
+                    line.trim().startsWith('*')
+                );
+                return commentLines.length > 0 && commentLines.length / text.split('\n').length > 0.1;
+            });
+            
+            if (hasComments) {
+                confidence += 0.1;
+                console.log('Comment pattern AI detection');
+            }
+        }
+
+        // 8. Error handling patterns (AI often adds try-catch, error handling)
+        if (event.contentChanges && event.contentChanges.length > 0) {
+            const hasErrorHandling = event.contentChanges.some((change: any) => {
+                if (!change.text) return false;
+                const text = change.text;
+                return (
+                    text.includes('try {') ||
+                    text.includes('catch (') ||
+                    text.includes('throw new') ||
+                    text.includes('if (error)') ||
+                    text.includes('console.error') ||
+                    text.includes('console.log')
+                );
+            });
+            
+            if (hasErrorHandling) {
+                confidence += 0.1;
+                console.log('Error handling AI detection');
+            }
+        }
+
         const isAI = confidence >= aiConfidenceThreshold;
         if (isAI) {
             console.log(`AI change detected with confidence: ${confidence.toFixed(2)}`);
