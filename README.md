@@ -59,6 +59,7 @@ The extension can be configured through VS Code settings:
 - **commitFrequency**: When to commit changes (`immediate`, `onSave`, `manual`)
 - **excludePatterns**: File patterns to exclude from auto-commit
 - **aiAuthorSuffix**: Suffix to append to author name for AI commits (default: "(agent)")
+- **useCursorAI**: Use Cursor's native AI for generating commit messages (default: true)
 
 ## How It Works
 
