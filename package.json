@@ -78,7 +78,7 @@
             "onSave",
             "manual"
           ],
-          "default": "immediate",
+          "default": "onSave",
           "description": "When to commit changes"
         },
         "cursorGit.excludePatterns": {
@@ -100,17 +100,26 @@
           "default": true,
           "description": "Use Cursor's native AI for generating commit messages"
         },
-        "cursorGit.aiChangeThreshold": {
+        "cursorGit.typingSpeedThreshold": {
           "type": "number",
-          "default": 20,
-          "description": "Minimum number of characters changed to consider it an AI-generated change"
+          "default": 150,
+          "minimum": 50,
+          "maximum": 500,
+          "description": "Typing speed threshold in WPM - anything above this is considered AI-generated"
         },
-        "cursorGit.aiConfidenceThreshold": {
+        "cursorGit.minCharactersForAnalysis": {
           "type": "number",
-          "default": 0.7,
-          "minimum": 0.1,
-          "maximum": 1,
-          "description": "Confidence threshold for AI change detection (0.1-1.0)"
+          "default": 10,
+          "minimum": 5,
+          "maximum": 50,
+          "description": "Minimum characters needed to analyze typing speed"
+        },
+        "cursorGit.sessionTimeout": {
+          "type": "number",
+          "default": 2000,
+          "minimum": 500,
+          "maximum": 10000,
+          "description": "Timeout in milliseconds before starting a new typing session"
         },
         "cursorGit.showNotifications": {
           "type": "boolean",
