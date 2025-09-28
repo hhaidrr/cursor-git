@@ -60,9 +60,22 @@ The extension can be configured through VS Code settings:
 ## How It Works
 
 1. **Change Detection**: The extension monitors file changes and text editor events to detect AI-generated modifications
-2. **File Analysis**: Analyzes changed files to generate descriptive commit messages
-3. **Git Operations**: Automatically stages and commits changes using the Git API
-4. **User Feedback**: Provides notifications and a chat interface for user interaction
+2. **File Analysis**: Analyzes changed files to generate descriptive commit messages and determine appropriate commit types
+3. **Conventional Commits**: Automatically generates conventional commit messages (feat, fix, docs, style, refactor, test, chore) based on file patterns
+4. **Git Operations**: Automatically stages and commits changes using the Git API
+5. **User Feedback**: Provides notifications and a chat interface for user interaction
+
+### Conventional Commit Types
+
+The extension automatically detects the appropriate commit type based on file patterns:
+
+- **feat**: New features or functionality (default)
+- **fix**: Bug fixes
+- **docs**: Documentation changes (README, .md files)
+- **style**: Code style changes (CSS, SCSS, formatting)
+- **refactor**: Code refactoring (file deletions, restructuring)
+- **test**: Test files and testing changes
+- **chore**: Configuration, build files, dependencies
 
 ## Architecture
 
