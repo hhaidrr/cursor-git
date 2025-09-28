@@ -22,12 +22,12 @@ export class ChangeDetector {
             }
         });
 
-        // Set up file change listeners
-        const fileChangeListener = vscode.workspace.onDidSaveTextDocument(async (document) => {
-            if (this.isEnabled && this.shouldAutoCommit()) {
-                await this.handleFileChange(document);
-            }
-        });
+        // Note: Removed file save listener - only commit on AI-generated changes
+        // const fileChangeListener = vscode.workspace.onDidSaveTextDocument(async (document) => {
+        //     if (this.isEnabled && this.shouldAutoCommit()) {
+        //         await this.handleFileChange(document);
+        //     }
+        // });
 
         // Set up AI completion listener (if available)
         const aiCompletionListener = vscode.workspace.onDidChangeTextDocument(async (event) => {
