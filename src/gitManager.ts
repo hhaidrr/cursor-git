@@ -216,7 +216,7 @@ export class GitManager {
             const hasBuildFiles = files.some(f => f.includes('build') || f.includes('webpack') || f.includes('rollup') || f.endsWith('.lock'));
 
             // Determine commit type
-            if (hasTestFiles && !hasNewFiles) {
+            if (hasTestFiles && !stats.hasNewFiles) {
                 commitType = 'test';
             } else if (hasDocFiles) {
                 commitType = 'docs';
