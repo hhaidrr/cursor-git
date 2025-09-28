@@ -7,7 +7,7 @@ All notable changes to the "cursor-git" extension will be documented in this fil
 ### Added
 - Initial release of Cursor Git extension
 - Automatic detection of AI-generated code changes
-- Smart commit message generation based on file types and changes
+- Smart conventional commit message generation (feat, fix, docs, etc.) based on file types and changes
 - Configurable commit behavior (immediate, onSave, manual)
 - Chat interface for managing commits and git operations
 - Status bar integration with visual indicators
