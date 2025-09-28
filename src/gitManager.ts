@@ -190,7 +190,7 @@ export class GitManager {
         return template.replace('{description}', analysis.description).replace('{type}', analysis.type);
     }
 
-    private async analyzeChanges(files: string[]): Promise<string> {
+    private async analyzeChanges(files: string[]): Promise<{type: string, description: string}> {
         try {
             // Get file extensions to understand the type of changes
             const extensions = files.map(f => path.extname(f)).filter(ext => ext);
@@ -204,22 +204,46 @@ export class GitManager {
                 hasDeletedFiles: files.some(f => f.includes('(deleted)'))
             };
 
-            // Generate description based on file types and changes
+            // Determine commit type based on file patterns and changes
+            let commitType = 'feat'; // Default to feat
             let description = '';
-            
+
+            // Check for specific file patterns to determine commit type
+            const hasTestFiles = files.some(f => f.includes('test') || f.includes('spec') || f.endsWith('.test.') || f.endsWith('.spec.'));
+            const hasDocFiles = files.some(f => f.endsWith('.md') || f.endsWith('.txt') || f.includes('doc'));
+            const hasConfigFiles = files.some(f => f.includes('config') || f.endsWith('.json') || f.endsWith('.yml') || f.endsWith('.yaml'));
+            const hasStyleFiles = files.some(f => f.endsWith('.css') || f.endsWith('.scss') || f.endsWith('.sass') || f.endsWith('.less'));
+            const hasBuildFiles = files.some(f => f.includes('build') || f.includes('webpack') || f.includes('rollup') || f.endsWith('.lock'));
+
+            // Determine commit type
+            if (hasTestFiles && !hasNewFiles) {
+                commitType = 'test';
+            } else if (hasDocFiles) {
+                commitType = 'docs';
+            } else if (hasStyleFiles) {
+                commitType = 'style';
+            } else if (hasConfigFiles || hasBuildFiles) {
+                commitType = 'chore';
+            } else if (stats.hasDeletedFiles && !stats.hasNewFiles) {
+                commitType = 'refactor';
+            } else if (files.some(f => f.includes('fix') || f.includes('bug'))) {
+                commitType = 'fix';
+            }
+
+            // Generate description based on file types and changes
             if (stats.hasNewFiles && stats.hasDeletedFiles) {
-                description = 'Added and removed files';
+                description = 'add and remove files';
             } else if (stats.hasNewFiles) {
-                description = 'Added new files';
+                description = 'add new files';
             } else if (stats.hasDeletedFiles) {
-                description = 'Removed files';
+                description = 'remove files';
             } else if (uniqueExtensions.length === 1) {
                 const ext = uniqueExtensions[0];
-                description = `Updated ${ext} files`;
+                description = `update ${ext} files`;
             } else if (uniqueExtensions.length > 1) {
-                description = 'Updated multiple file types';
+                description = 'update multiple file types';
             } else {
-                description = 'Updated files';
+                description = 'update files';
             }
 
             // Add file count if more than 1
@@ -227,10 +251,10 @@ export class GitManager {
                 description += ` (${stats.total} files)`;
             }
 
-            return description;
+            return { type: commitType, description };
         } catch (error) {
             console.error('Error analyzing changes:', error);
-            return 'AI-generated changes';
+            return { type: 'feat', description: 'AI-generated changes' };
         }
     }
 
