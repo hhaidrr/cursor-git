@@ -1,0 +1,71 @@
+name: Build and Release Extension
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., v1.0.0)'
+        required: true
+        type: string
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run linting
+      run: npm run lint
+      
+    - name: Run tests
+      run: npm test
+      
+    - name: Compile TypeScript
+      run: npm run compile
+      
+    - name: Package extension
+      run: npm run package
+      
+    - name: Upload extension as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: cursor-git-extension
+        path: cursor-git-*.vsix
+        retention-days: 30
+        
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: cursor-git-*.vsix
+        generate_release_notes: true
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Extension Ready for Local Installation
+      run: |
+        echo "✅ Extension built successfully!"
+        echo "📦 VSIX file: cursor-git-*.vsix"
+        echo "🔧 To install locally:"
+        echo "   1. Download the .vsix file from the GitHub release"
+        echo "   2. In VS Code: Extensions → ... → Install from VSIX"
+        echo "   3. Or use: code --install-extension cursor-git-*.vsix"
+        echo ""
+        echo "🚀 For VS Code Marketplace publishing in the future:"
+        echo "   1. Add VSCE_PAT secret to repository settings"
+        echo "   2. Uncomment the marketplace publishing step in the workflow"
