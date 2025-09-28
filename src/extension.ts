@@ -116,6 +116,30 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
 
+    // Command to check available Cursor AI commands
+    const checkCursorAICommand = vscode.commands.registerCommand('cursorGit.checkCursorAI', async () => {
+        try {
+            // Check if the command exists
+            const commands = await vscode.commands.getCommands();
+            const cursorCommands = commands.filter(cmd => cmd.includes('cursor'));
+            
+            vscode.window.showInformationMessage(
+                `Available Cursor commands: ${cursorCommands.length}\n` +
+                `Cursor AI commands: ${cursorCommands.filter(cmd => cmd.includes('generate')).join(', ')}`
+            );
+            
+            // Try to execute the command to see what happens
+            try {
+                const result = await vscode.commands.executeCommand('cursor.generateGitCommitMessage');
+                vscode.window.showInformationMessage(`Command result: ${typeof result} - ${result}`);
+            } catch (cmdError) {
+                vscode.window.showErrorMessage(`Command error: ${cmdError}`);
+            }
+        } catch (error) {
+            vscode.window.showErrorMessage(`Check failed: ${error}`);
+        }
+    });
+
     // Register all commands
     context.subscriptions.push(enableCommand, disableCommand, commitNowCommand, showStatusCommand, testCursorAICommand, testAISampleCommand);
 
