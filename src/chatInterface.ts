@@ -16,7 +16,7 @@ export class ChatInterface {
             return;
         }
 
-        // random commend
+        // random comment
         this.panel = vscode.window.createWebviewPanel(
             'cursorGitChat',
             'Cursor Git Chat',
