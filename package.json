@@ -49,7 +49,7 @@
         "cursorGit.commitMessageTemplate": {
           "type": "string",
           "default": "feat: {description}",
-          "description": "Template for commit messages. Use {description} for change description"
+          "description": "Template for commit messages. Use {description} for change description, {type} for commit type"
         },
         "cursorGit.autoStage": {
           "type": "boolean",
