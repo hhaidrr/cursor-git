@@ -239,7 +239,6 @@ export class GitManager {
         }
     }
 
-    // adding important comment
 
     private async getStagedDiff(): Promise<string> {
         try {
