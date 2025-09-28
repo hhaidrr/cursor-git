@@ -117,7 +117,7 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     // Register all commands
-    context.subscriptions.push(enableCommand, disableCommand, commitNowCommand, showStatusCommand, testCursorAICommand);
+    context.subscriptions.push(enableCommand, disableCommand, commitNowCommand, showStatusCommand, testCursorAICommand, testAISampleCommand);
 
     // Initialize change detection
     changeDetector.initialize();
