@@ -53,17 +53,61 @@ export function activate(context: vscode.ExtensionContext) {
         const config = vscode.workspace.getConfiguration('cursorGit');
         const isEnabled = config.get('enabled', true);
         const commitFrequency = config.get('commitFrequency', 'immediate');
+        const useCursorAI = config.get('useCursorAI', true);
         
         vscode.window.showInformationMessage(
             `Cursor Git Status:\n` +
             `Enabled: ${isEnabled ? 'Yes' : 'No'}\n` +
             `Commit Frequency: ${commitFrequency}\n` +
-            `Auto Stage: ${config.get('autoStage', true) ? 'Yes' : 'No'}`
+            `Auto Stage: ${config.get('autoStage', true) ? 'Yes' : 'No'}\n` +
+            `Use Cursor AI: ${useCursorAI ? 'Yes' : 'No'}`
         );
     });
 
+    const testCursorAICommand = vscode.commands.registerCommand('cursorGit.testCursorAI', async () => {
+        try {
+            // Get modified files
+            const modifiedFiles = await gitManager.getModifiedFiles();
+            if (modifiedFiles.length === 0) {
+                vscode.window.showInformationMessage('No changes to test with. Make some changes first.');
+                return;
+            }
+
+            // Stage files for testing
+            await gitManager.stageFiles(modifiedFiles);
+            
+            // Test Cursor AI generation
+            const config = vscode.workspace.getConfiguration('cursorGit');
+            const useCursorAI = config.get('useCursorAI', true);
+            
+            if (!useCursorAI) {
+                vscode.window.showWarningMessage('Cursor AI is disabled. Enable it in settings to test.');
+                return;
+            }
+
+            // Try to generate a commit message using Cursor AI
+            const result = await vscode.commands.executeCommand('cursor.generateGitCommitMessage');
+            
+            if (typeof result === 'string' && result.trim()) {
+                vscode.window.showInformationMessage(
+                    `Cursor AI Generated Message:\n"${result.trim()}"`,
+                    'Use This Message',
+                    'Cancel'
+                ).then(selection => {
+                    if (selection === 'Use This Message') {
+                        gitManager.commitChanges(result.trim());
+                    }
+                });
+            } else {
+                vscode.window.showWarningMessage('Cursor AI did not generate a message. This might be a limitation of the current implementation.');
+            }
+        } catch (error) {
+            vscode.window.showErrorMessage(`Test failed: ${error}`);
+        }
+    });
+
     // Register all commands
-    context.subscriptions.push(enableCommand, disableCommand, commitNowCommand, showStatusCommand);
+    context.subscriptions.push(enableCommand, disableCommand, commitNowCommand, showStatusCommand, testCursorAICommand);
 
     // Initialize change detection
     changeDetector.initialize();
