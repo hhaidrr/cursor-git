@@ -239,6 +239,8 @@ export class GitManager {
         }
     }
 
+    // adding important comment
+
     private async getStagedDiff(): Promise<string> {
         try {
             const diff = await this.git.diff(['--cached']);
