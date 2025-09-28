@@ -208,6 +208,14 @@ export class GitManager {
 
             console.log('Staged files for AI analysis:', status.staged);
 
+            // Check if we have actual changes by getting the diff
+            const diff = await this.getStagedDiff();
+            if (!diff || diff.trim().length === 0) {
+                throw new Error('No staged changes found for AI analysis. Please ensure files are staged and contain changes.');
+            }
+
+            console.log('Staged diff length:', diff.length);
+
             // Try to execute the Cursor AI command
             const result = await vscode.commands.executeCommand('cursor.generateGitCommitMessage');
             
@@ -228,6 +236,16 @@ export class GitManager {
             }
             
             throw error;
+        }
+    }
+
+    private async getStagedDiff(): Promise<string> {
+        try {
+            const diff = await this.git.diff(['--cached']);
+            return diff || '';
+        } catch (error) {
+            console.error('Error getting staged diff:', error);
+            return '';
         }
     }
 
