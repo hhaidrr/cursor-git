@@ -51,7 +51,7 @@ The extension can be configured through VS Code settings:
 #### Configuration Options
 
 - **enabled**: Enable/disable the extension
-- **commitMessageTemplate**: Template for commit messages (use `{description}` for auto-generated description)
+- **commitMessageTemplate**: Template for commit messages (use `{description}` for auto-generated description, `{type}` for commit type)
 - **autoStage**: Automatically stage modified files before committing
 - **commitFrequency**: When to commit changes (`immediate`, `onSave`, `manual`)
 - **excludePatterns**: File patterns to exclude from auto-commit
