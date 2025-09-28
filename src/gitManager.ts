@@ -327,6 +327,12 @@ export class GitManager {
         }
     }
 
+    // New method to test AI commit message generation
+    async testAIGeneration(): Promise<string> {
+        const testFiles = ['src/test.ts', 'src/ai-test.js'];
+        return await this.generateCommitMessage(testFiles);
+    }
+
     async revertLastCommit(): Promise<boolean> {
         try {
             await this.git.reset(['--soft', 'HEAD~1']);
