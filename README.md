@@ -64,10 +64,11 @@ The extension can be configured through VS Code settings:
 ## How It Works
 
 1. **Change Detection**: The extension monitors file changes and text editor events to detect AI-generated modifications
-2. **File Analysis**: Analyzes changed files to generate descriptive commit messages and determine appropriate commit types
-3. **Conventional Commits**: Automatically generates conventional commit messages (feat, fix, docs, style, refactor, test, chore) based on file patterns
-4. **Git Operations**: Automatically stages and commits changes using the Git API
-5. **User Feedback**: Provides notifications and a chat interface for user interaction
+2. **AI-Powered Commit Messages**: Uses Cursor's native AI to generate intelligent, context-aware commit messages based on staged changes and git history
+3. **Fallback System**: Falls back to heuristic-based commit message generation if Cursor AI is unavailable
+4. **Conventional Commits**: Automatically generates conventional commit messages (feat, fix, docs, style, refactor, test, chore) based on file patterns
+5. **Git Operations**: Automatically stages and commits changes using the Git API
+6. **User Feedback**: Provides notifications and a chat interface for user interaction
 
 ### Conventional Commit Types
 
