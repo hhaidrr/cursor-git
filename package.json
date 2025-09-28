@@ -71,6 +71,11 @@
           "type": "string",
           "default": "(agent)",
           "description": "Suffix to append to author name for AI commits"
+        },
+        "cursorGit.useCursorAI": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use Cursor's native AI for generating commit messages"
         }
       }
     },
