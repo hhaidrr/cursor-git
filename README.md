@@ -121,15 +121,15 @@ npm run build
 
 This will compile the TypeScript and package the extension into a `.vsix` file.
 
-### Automated Releases
+### Automated Builds
 
-The extension uses GitHub Actions for automated building and releasing:
+The extension uses GitHub Actions for automated building and local releases:
 
 - **CI Workflow**: Runs on every push/PR to main/develop branches
 - **Release Workflow**: Triggers on version tags (e.g., `v1.0.0`)
-- **VS Code Marketplace**: Automatically publishes if `VSCE_PAT` secret is configured
+- **Local Installation**: Creates GitHub releases with `.vsix` files for local testing
 
-See [RELEASE.md](RELEASE.md) for detailed release instructions.
+See [RELEASE.md](RELEASE.md) for detailed build and installation instructions.
 
 ## Limitations
 
