@@ -50,7 +50,7 @@ export class ChangeDetector {
 
         this.disposables.push(
             configChangeListener,
-            fileChangeListener,
+            // fileChangeListener, // Removed - only commit on AI changes
             aiCompletionListener,
             cursorChangeListener
         );
