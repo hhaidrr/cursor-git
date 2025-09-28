@@ -62,7 +62,7 @@ export class ChangeDetector {
 
         this.disposables.push(
             configChangeListener,
-            commandListener,
+            aiEventDetector,
             aiCompletionListener,
             cursorChangeListener
         );
