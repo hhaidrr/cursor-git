@@ -6,6 +6,15 @@ export class ChangeDetector {
     private disposables: vscode.Disposable[] = [];
     private lastCommitHash: string | null = null;
     private isEnabled: boolean = true;
+    
+    // Typing Speed Tracking
+    private typingSessions: Array<{timestamp: number, characters: number, duration: number}> = [];
+    private currentSession: {startTime: number, characters: number} | null = null;
+    private isHumanTyping: boolean = true; // Default to human, only set to AI when confident
+    private lastUserAction: number = 0;
+    
+    // File Save Tracking
+    private pendingChanges: Map<string, boolean> = new Map(); // fileUri -> isAI
 
     constructor(gitManager: GitManager) {
         this.gitManager = gitManager;
@@ -22,37 +31,37 @@ export class ChangeDetector {
             }
         });
 
-        // Note: Removed file save listener - only commit on AI-generated changes
-        // const fileChangeListener = vscode.workspace.onDidSaveTextDocument(async (document) => {
-        //     if (this.isEnabled && this.shouldAutoCommit()) {
-        //         await this.handleFileChange(document);
-        //     }
-        // });
-
-        // Set up AI completion listener (if available)
-        const aiCompletionListener = vscode.workspace.onDidChangeTextDocument(async (event) => {
-            if (this.isEnabled && this.isAIGeneratedChange(event) && this.shouldAutoCommit()) {
-                // Debounce to avoid multiple commits for rapid changes
-                setTimeout(async () => {
-                    await this.handleAIGeneratedChange(event);
-                }, 1000);
+        // Set up text document change listener for typing speed analysis
+        const textChangeListener = vscode.workspace.onDidChangeTextDocument(async (event) => {
+            if (this.isEnabled) {
+                this.analyzeTypingSpeed(event);
             }
         });
 
-        // Set up cursor position change listener to detect AI completions
-        const cursorChangeListener = vscode.window.onDidChangeTextEditorSelection(async (event) => {
-            if (this.isEnabled && this.isAIGeneratedChange(event) && this.shouldAutoCommit()) {
-                setTimeout(async () => {
-                    await this.handleAIGeneratedChange(event);
-                }, 1000);
+        // Set up file save listener for auto-commit
+        const fileSaveListener = vscode.workspace.onDidSaveTextDocument(async (document) => {
+            if (this.isEnabled && this.shouldAutoCommit()) {
+                await this.handleFileSave(document);
             }
+        });
+
+        // Set up undo/redo listeners to detect user actions
+        const undoListener = vscode.commands.registerCommand('undo', () => {
+            this.flagHumanAction('undo');
+            return vscode.commands.executeCommand('default:undo');
+        });
+
+        const redoListener = vscode.commands.registerCommand('redo', () => {
+            this.flagHumanAction('redo');
+            return vscode.commands.executeCommand('default:redo');
         });
 
         this.disposables.push(
             configChangeListener,
-            // fileChangeListener, // Removed - only commit on AI changes
-            aiCompletionListener,
-            cursorChangeListener
+            textChangeListener,
+            fileSaveListener,
+            undoListener,
+            redoListener
         );
 
         await this.updateEnabledState();
@@ -65,13 +74,13 @@ export class ChangeDetector {
 
     private shouldAutoCommit(): boolean {
         const config = vscode.workspace.getConfiguration('cursorGit');
-        const frequency = config.get<string>('commitFrequency', 'immediate');
+        const frequency = config.get<string>('commitFrequency', 'onSave');
         
         switch (frequency) {
             case 'immediate':
                 return true;
             case 'onSave':
-                return true; // This is handled by onDidSaveTextDocument
+                return true;
             case 'manual':
                 return false;
             default:
@@ -79,19 +88,157 @@ export class ChangeDetector {
         }
     }
 
-    private async handleFileChange(document: vscode.TextDocument): Promise<void> {
-        try {
-            const result = await this.gitManager.stageAndCommit();
-            if (result.success) {
-                this.lastCommitHash = result.hash || null;
-                this.showCommitNotification(result.message);
+    private analyzeTypingSpeed(event: any): void {
+        const now = Date.now();
+        
+        // Skip undo operations
+        if (event.kind === vscode.TextDocumentChangeReason.Undo) {
+            this.flagHumanAction('undo');
+            return;
+        }
+
+        // Analyze each content change
+        if (event.contentChanges && event.contentChanges.length > 0) {
+            for (const change of event.contentChanges) {
+                this.processChange(change, now);
             }
-        } catch (error) {
-            console.error('Error handling file change:', error);
         }
     }
 
-    private async handleAIGeneratedChange(event: any): Promise<void> {
+    private processChange(change: any, timestamp: number): void {
+        const text = change.text || '';
+        const textLength = text.length;
+        
+        // Detect human-only actions that override WPM
+        if (this.isHumanOnlyAction(change)) {
+            this.flagHumanAction('human-action');
+            return;
+        }
+
+        // Start new session if none exists
+        if (!this.currentSession) {
+            this.currentSession = {
+                startTime: timestamp,
+                characters: textLength
+            };
+            return;
+        }
+
+        // Get configuration values
+        const config = vscode.workspace.getConfiguration('cursorGit');
+        const sessionTimeout = config.get<number>('sessionTimeout', 2000);
+        const minCharacters = config.get<number>('minCharactersForAnalysis', 10);
+        
+        // Calculate time since last change
+        const timeSinceLastChange = timestamp - this.currentSession.startTime;
+        
+        // If more than session timeout has passed, start a new session
+        if (timeSinceLastChange > sessionTimeout) {
+            this.finalizeCurrentSession();
+            this.currentSession = {
+                startTime: timestamp,
+                characters: textLength
+            };
+            return;
+        }
+
+        // Add characters to current session
+        this.currentSession.characters += textLength;
+
+        // If session has enough data, analyze typing speed
+        if (this.currentSession.characters >= minCharacters) {
+            const wpm = this.calculateWPM(this.currentSession.characters, timeSinceLastChange);
+            const speedThreshold = config.get<number>('typingSpeedThreshold', 150);
+            
+            if (wpm > speedThreshold) {
+                this.isHumanTyping = false; // AI typing detected
+                console.log(`AI typing detected: ${wpm.toFixed(1)} WPM (threshold: ${speedThreshold})`);
+            } else {
+                this.isHumanTyping = true; // Human typing confirmed
+                console.log(`Human typing confirmed: ${wpm.toFixed(1)} WPM (threshold: ${speedThreshold})`);
+            }
+        }
+    }
+
+    private isHumanOnlyAction(change: any): boolean {
+        const text = change.text || '';
+        
+        // Detect deletions (backspace, delete key)
+        if (text === '' && change.rangeLength > 0) {
+            return true;
+        }
+        
+        // Detect backspace patterns (single character deletions)
+        if (text.length === 0 && change.rangeLength === 1) {
+            return true;
+        }
+        
+        // Detect very small changes (likely manual editing)
+        if (text.length <= 2 && change.rangeLength <= 2) {
+            return true;
+        }
+        
+        // Detect copy/paste patterns (large text blocks with no typing delay)
+        // This is a simplified detection - in practice, copy/paste would need more sophisticated detection
+        if (text.length > 50 && change.rangeLength === 0) {
+            // Large text insertion with no deletion - likely copy/paste
+            return true;
+        }
+        
+        return false;
+    }
+
+    private calculateWPM(characters: number, durationMs: number): number {
+        // Convert to words per minute
+        // 1 word = 5 characters (standard)
+        const words = characters / 5;
+        const minutes = durationMs / (1000 * 60);
+        return words / minutes;
+    }
+
+    private finalizeCurrentSession(): void {
+        if (this.currentSession) {
+            const duration = Date.now() - this.currentSession.startTime;
+            this.typingSessions.push({
+                timestamp: this.currentSession.startTime,
+                characters: this.currentSession.characters,
+                duration: duration
+            });
+            
+            // Keep only last 10 sessions
+            if (this.typingSessions.length > 10) {
+                this.typingSessions.shift();
+            }
+            
+            this.currentSession = null;
+        }
+    }
+
+    private flagHumanAction(action: string): void {
+        const now = Date.now();
+        this.isHumanTyping = true;
+        this.lastUserAction = now;
+        console.log(`Human action detected: ${action}`);
+    }
+
+    private async handleFileSave(document: vscode.TextDocument): Promise<void> {
+        const fileUri = document.uri.toString();
+        
+        // Check if we have pending changes for this file
+        const isAI = this.pendingChanges.get(fileUri) || this.isHumanTyping === false;
+        
+        if (isAI) {
+            console.log(`Auto-committing AI changes for file: ${document.fileName}`);
+            await this.commitChanges(document);
+        } else {
+            console.log(`Skipping commit for human changes: ${document.fileName}`);
+        }
+        
+        // Clear pending changes for this file
+        this.pendingChanges.delete(fileUri);
+    }
+
+    private async commitChanges(document: vscode.TextDocument): Promise<void> {
         try {
             // Check if there are actually changes to commit
             const modifiedFiles = await this.gitManager.getModifiedFiles();
@@ -107,47 +254,6 @@ export class ChangeDetector {
         } catch (error) {
             console.error('Error handling AI-generated change:', error);
         }
-    }
-
-    private isAIGeneratedChange(event: any): boolean {
-        // This is a heuristic to detect AI-generated changes
-        // In a real implementation, you might need to hook into Cursor's AI API
-        
-        // Skip undo operations
-        if (event.kind === vscode.TextDocumentChangeReason.Undo) {
-            return false;
-        }
-
-        // Check if the change is significant (more than a few characters)
-        if (event.contentChanges && event.contentChanges.length > 0) {
-            const totalChanges = event.contentChanges.reduce((sum: number, change: any) => {
-                return sum + (change.text?.length || 0);
-            }, 0);
-            
-            // Get configuration for minimum change threshold
-            const config = vscode.workspace.getConfiguration('cursorGit');
-            const minChangeThreshold = config.get<number>('aiChangeThreshold', 20);
-            
-            // If more than threshold characters changed, likely AI-generated
-            if (totalChanges > minChangeThreshold) {
-                console.log(`AI change detected: ${totalChanges} characters changed`);
-                return true;
-            }
-        }
-
-        // Check for multi-line changes (AI often generates multiple lines)
-        if (event.contentChanges && event.contentChanges.length > 0) {
-            const hasMultiLineChanges = event.contentChanges.some((change: any) => {
-                return change.text && change.text.includes('\n');
-            });
-            
-            if (hasMultiLineChanges) {
-                console.log('AI change detected: multi-line change');
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private showCommitNotification(message: string): void {
@@ -185,7 +291,22 @@ export class ChangeDetector {
         }
     }
 
+    // Public method to manually set AI flag (for testing or external triggers)
+    public setAIFlag(isAI: boolean): void {
+        this.isHumanTyping = !isAI;
+        console.log(`AI flag manually set to: ${isAI}`);
+    }
+
+    // Public method to get current typing status
+    public getTypingStatus(): {isHuman: boolean, lastUserAction: number} {
+        return {
+            isHuman: this.isHumanTyping,
+            lastUserAction: this.lastUserAction
+        };
+    }
+
     dispose(): void {
         this.disposables.forEach(d => d.dispose());
+        this.finalizeCurrentSession();
     }
 }
