@@ -46,7 +46,8 @@ The extension can be configured through VS Code settings:
   "cursorGit.autoStage": true,
   "cursorGit.commitFrequency": "immediate",
   "cursorGit.excludePatterns": ["*.log", "*.tmp", "node_modules/**"],
-  "cursorGit.aiAuthorSuffix": "(agent)"
+  "cursorGit.aiAuthorSuffix": "(agent)",
+  "cursorGit.useCursorAI": true
 }
 ```
 
