@@ -2,7 +2,7 @@
   "name": "cursor-git",
   "displayName": "Cursor Git",
   "description": "Automatically commit AI-generated changes in Cursor IDE",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "publisher": "cursor-git",
   "engines": {
     "vscode": "^1.74.0"
@@ -109,7 +109,7 @@
           "type": "number",
           "default": 0.7,
           "minimum": 0.1,
-          "maximum": 1.0,
+          "maximum": 1,
           "description": "Confidence threshold for AI change detection (0.1-1.0)"
         },
         "cursorGit.showNotifications": {
