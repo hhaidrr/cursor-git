@@ -177,12 +177,17 @@ export class GitManager {
 
     private async generateCommitMessage(files: string[]): Promise<string> {
         const config = vscode.workspace.getConfiguration('cursorGit');
-        const template = config.get('commitMessageTemplate', 'AI: {description}');
+        const template = config.get('commitMessageTemplate', 'feat: {description}');
 
-        // Analyze file changes to generate a description
-        const description = await this.analyzeChanges(files);
+        // Analyze file changes to generate a description and determine commit type
+        const analysis = await this.analyzeChanges(files);
         
-        return template.replace('{description}', description);
+        // If template doesn't contain a type prefix, add conventional commit type
+        if (!template.includes('{type}') && !template.match(/^(feat|fix|docs|style|refactor|test|chore|build|ci|perf|revert):/)) {
+            return `${analysis.type}: ${analysis.description}`;
+        }
+        
+        return template.replace('{description}', analysis.description).replace('{type}', analysis.type);
     }
 
     private async analyzeChanges(files: string[]): Promise<string> {
