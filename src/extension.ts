@@ -52,15 +52,17 @@ export function activate(context: vscode.ExtensionContext) {
     const showStatusCommand = vscode.commands.registerCommand('cursorGit.showStatus', () => {
         const config = vscode.workspace.getConfiguration('cursorGit');
         const isEnabled = config.get('enabled', true);
-        const commitFrequency = config.get('commitFrequency', 'immediate');
+        const commitFrequency = config.get('commitFrequency', 'onSave');
         const useCursorAI = config.get('useCursorAI', true);
+        const typingThreshold = config.get('typingSpeedThreshold', 150);
         
         vscode.window.showInformationMessage(
             `Cursor Git Status:\n` +
             `Enabled: ${isEnabled ? 'Yes' : 'No'}\n` +
             `Commit Frequency: ${commitFrequency}\n` +
             `Auto Stage: ${config.get('autoStage', true) ? 'Yes' : 'No'}\n` +
-            `Use Cursor AI: ${useCursorAI ? 'Yes' : 'No'}`
+            `Use Cursor AI: ${useCursorAI ? 'Yes' : 'No'}\n` +
+            `Typing Speed Threshold: ${typingThreshold} WPM`
         );
     });
 
@@ -140,8 +142,42 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
 
+    // Command to check typing status
+    const checkTypingStatusCommand = vscode.commands.registerCommand('cursorGit.checkTypingStatus', () => {
+        const status = changeDetector.getTypingStatus();
+        const timeSinceLastAction = Date.now() - status.lastUserAction;
+        
+        vscode.window.showInformationMessage(
+            `Typing Status:\n` +
+            `Current Mode: ${status.isHuman ? 'Human' : 'AI'}\n` +
+            `Last User Action: ${timeSinceLastAction > 0 ? Math.round(timeSinceLastAction / 1000) + 's ago' : 'Never'}`
+        );
+    });
+
+    // Command to manually set AI flag
+    const setAIFlagCommand = vscode.commands.registerCommand('cursorGit.setAIFlag', async () => {
+        const result = await vscode.window.showQuickPick(['Human', 'AI'], {
+            placeHolder: 'Set typing mode'
+        });
+        
+        if (result) {
+            changeDetector.setAIFlag(result === 'AI');
+            vscode.window.showInformationMessage(`Typing mode set to: ${result}`);
+        }
+    });
+
     // Register all commands
-    context.subscriptions.push(enableCommand, disableCommand, commitNowCommand, showStatusCommand, testCursorAICommand, testAISampleCommand, checkCursorAICommand);
+    context.subscriptions.push(
+        enableCommand, 
+        disableCommand, 
+        commitNowCommand, 
+        showStatusCommand, 
+        testCursorAICommand, 
+        testAISampleCommand, 
+        checkCursorAICommand,
+        checkTypingStatusCommand,
+        setAIFlagCommand
+    );
 
     // Initialize change detection
     changeDetector.initialize();
