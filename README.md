@@ -4,7 +4,7 @@ A VS Code extension that automatically commits AI-generated changes in Cursor ID
 
 ## Features
 
-- **Automatic AI Change Detection**: Detects when AI generates code changes and automatically commits them
+- **AI-Only Auto-Commit**: Only commits when AI generates code changes, not on manual saves
 - **Smart Commit Messages**: Uses Cursor's native AI to generate intelligent, context-aware commit messages
 - **Fallback System**: Falls back to heuristic-based commit messages if Cursor AI is unavailable
 - **Testing Tools**: Built-in commands to test AI commit message generation with real and sample files
