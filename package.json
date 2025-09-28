@@ -135,7 +135,8 @@
     "mocha": "^10.2.0",
     "@types/mocha": "^10.0.6",
     "glob": "^8.1.0",
-    "@types/glob": "^8.1.0"
+    "@types/glob": "^8.1.0",
+    "@vscode/vsce": "^2.19.0"
   },
   "dependencies": {
     "simple-git": "^3.19.1"
