@@ -2,7 +2,7 @@
   "name": "cursor-git",
   "displayName": "Cursor Git",
   "description": "Automatically commit AI-generated changes in Cursor IDE",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "cursor-git",
   "engines": {
     "vscode": "^1.74.0"
