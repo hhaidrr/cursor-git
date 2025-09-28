@@ -34,6 +34,7 @@ A VS Code extension that automatically commits AI-generated changes in Cursor ID
 - `Cursor Git: Commit Current Changes` - Manually commit current changes
 - `Cursor Git: Show Status` - Display current configuration and status
 - `Cursor Git: Test Cursor AI Commit Generation` - Test Cursor's AI commit message generation
+- `Cursor Git: Test AI with Sample Files` - Test AI generation with sample file patterns
 
 ### Configuration
 
