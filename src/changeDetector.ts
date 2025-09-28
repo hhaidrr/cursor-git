@@ -109,6 +109,52 @@ export class ChangeDetector {
         }
     }
 
+    private detectAIPatterns(event: any): boolean {
+        // Detect AI patterns in text changes
+        if (!event.contentChanges || event.contentChanges.length === 0) {
+            return false;
+        }
+
+        const totalChanges = event.contentChanges.reduce((sum: number, change: any) => {
+            return sum + (change.text?.length || 0);
+        }, 0);
+
+        // Look for AI-like patterns
+        const hasAIPatterns = event.contentChanges.some((change: any) => {
+            if (!change.text) return false;
+            const text = change.text;
+            
+            // Large blocks of code (AI often generates complete functions)
+            if (text.length > 100 && text.includes('\n')) {
+                return true;
+            }
+            
+            // Well-structured code patterns
+            if (text.includes('function ') || text.includes('class ') || text.includes('interface ')) {
+                return true;
+            }
+            
+            // Import/export statements
+            if (text.includes('import ') || text.includes('export ')) {
+                return true;
+            }
+            
+            // JSDoc comments
+            if (text.includes('/**') || text.includes('* @')) {
+                return true;
+            }
+            
+            // Type annotations
+            if (text.includes(': ') && (text.includes('string') || text.includes('number') || text.includes('boolean'))) {
+                return true;
+            }
+            
+            return false;
+        });
+
+        return hasAIPatterns && totalChanges > 20;
+    }
+
     private isAIGeneratedCommand(command: string): boolean {
         // Comprehensive list of Cursor AI commands
         const aiCommands = [
