@@ -177,6 +177,51 @@ export class GitManager {
 
     private async generateCommitMessage(files: string[]): Promise<string> {
         const config = vscode.workspace.getConfiguration('cursorGit');
+        const useCursorAI = config.get<boolean>('useCursorAI', true);
+
+        if (useCursorAI) {
+            try {
+                // Use Cursor's native AI commit message generation
+                return await this.generateCursorCommitMessage();
+            } catch (error) {
+                console.error('Cursor AI commit generation failed:', error);
+                // Fall back to heuristic method
+            }
+        }
+
+        // Fallback to heuristic method
+        return this.generateHeuristicCommitMessage(files);
+    }
+
+    private async generateCursorCommitMessage(): Promise<string> {
+        try {
+            // First, ensure files are staged
+            const status = await this.getStatus();
+            if (status.staged.length === 0) {
+                // Stage the modified files
+                const modifiedFiles = await this.getModifiedFiles();
+                await this.stageFiles(modifiedFiles);
+            }
+
+            // Try to execute the Cursor AI command
+            const result = await vscode.commands.executeCommand('cursor.generateGitCommitMessage');
+            
+            if (typeof result === 'string' && result.trim()) {
+                return result.trim();
+            }
+
+            // If direct command doesn't work, we might need to wait for user interaction
+            // or use a different approach
+            throw new Error('Cursor AI command did not return a message');
+            
+        } catch (error) {
+            console.error('Error with Cursor AI commit generation:', error);
+            throw error;
+        }
+    }
+
+    private async generateHeuristicCommitMessage(files: string[]): Promise<string> {
+        const config = vscode.workspace.getConfiguration('cursorGit');
         const template = config.get('commitMessageTemplate', 'feat: {description}');
 
         // Analyze file changes to generate a description and determine commit type
