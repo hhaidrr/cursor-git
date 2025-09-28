@@ -33,8 +33,13 @@ export class ChangeDetector {
         });
 
         // Set up command execution listener to detect AI commands
-        // Note: VS Code doesn't have a direct way to listen to all commands
-        // We'll use a different approach by monitoring specific events
+        // We'll monitor for specific AI-related events and patterns
+        const aiEventDetector = vscode.workspace.onDidChangeTextDocument(async (event) => {
+            // Check if this might be an AI-generated change by looking for patterns
+            if (this.isEnabled && this.detectAIPatterns(event)) {
+                this.flagAIGenerated('text-document-change');
+            }
+        });
 
         // Set up AI completion listener
         const aiCompletionListener = vscode.workspace.onDidChangeTextDocument(async (event) => {
