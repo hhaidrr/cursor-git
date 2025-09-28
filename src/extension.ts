@@ -106,6 +106,16 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
 
+    // New command to test AI generation with sample files
+    const testAISampleCommand = vscode.commands.registerCommand('cursorGit.testAISample', async () => {
+        try {
+            const testMessage = await gitManager.testAIGeneration();
+            vscode.window.showInformationMessage(`AI Test Message: ${testMessage}`);
+        } catch (error) {
+            vscode.window.showErrorMessage(`AI Test failed: ${error}`);
+        }
+    });
+
     // Register all commands
     context.subscriptions.push(enableCommand, disableCommand, commitNowCommand, showStatusCommand, testCursorAICommand);
 
