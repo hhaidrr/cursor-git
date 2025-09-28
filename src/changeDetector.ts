@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { GitManager } from './gitManager';
-
+// some random
 export class ChangeDetector {
     private gitManager: GitManager;
     private disposables: vscode.Disposable[] = [];
