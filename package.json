@@ -101,6 +101,16 @@
           "description": "Use Cursor's native AI for generating commit messages"
         },
         "cursorGit.aiChangeThreshold": {
+          "type": "number",
+          "default": 20,
+          "description": "Minimum number of characters changed to consider it an AI-generated change"
+        },
+        "cursorGit.aiConfidenceThreshold": {
+          "type": "number",
+          "default": 0.7,
+          "minimum": 0.1,
+          "maximum": 1.0,
+          "description": "Confidence threshold for AI change detection (0.1-1.0)"
         },
         "cursorGit.aiConfidenceThreshold": {
           "type": "number",
