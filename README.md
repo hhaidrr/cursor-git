@@ -62,6 +62,7 @@ The extension can be configured through VS Code settings:
 - **excludePatterns**: File patterns to exclude from auto-commit
 - **aiAuthorSuffix**: Suffix to append to author name for AI commits (default: "(agent)")
 - **useCursorAI**: Use Cursor's native AI for generating commit messages (default: true)
+- **aiChangeThreshold**: Minimum characters changed to consider it AI-generated (default: 20)
 
 ## How It Works
 
