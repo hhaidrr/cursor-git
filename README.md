@@ -116,8 +116,20 @@ npm test
 ### Packaging
 
 ```bash
-npm run vscode:prepublish
+npm run build
 ```
+
+This will compile the TypeScript and package the extension into a `.vsix` file.
+
+### Automated Releases
+
+The extension uses GitHub Actions for automated building and releasing:
+
+- **CI Workflow**: Runs on every push/PR to main/develop branches
+- **Release Workflow**: Triggers on version tags (e.g., `v1.0.0`)
+- **VS Code Marketplace**: Automatically publishes if `VSCE_PAT` secret is configured
+
+See [RELEASE.md](RELEASE.md) for detailed release instructions.
 
 ## Limitations
 
