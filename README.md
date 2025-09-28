@@ -40,7 +40,7 @@ The extension can be configured through VS Code settings:
 ```json
 {
   "cursorGit.enabled": true,
-  "cursorGit.commitMessageTemplate": "AI: {description}",
+  "cursorGit.commitMessageTemplate": "feat: {description}",
   "cursorGit.autoStage": true,
   "cursorGit.commitFrequency": "immediate",
   "cursorGit.excludePatterns": ["*.log", "*.tmp", "node_modules/**"],
