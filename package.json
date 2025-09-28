@@ -112,58 +112,11 @@
           "maximum": 1.0,
           "description": "Confidence threshold for AI change detection (0.1-1.0)"
         },
-        "cursorGit.aiConfidenceThreshold": {
-          "type": "number",
-          "default": 0.7,
-          "minimum": 0.1,
-          "maximum": 1.0,
-          "description": "Confidence threshold for AI change detection (0.1-1.0)"
-        },
-        },
-        "cursorGit.aiConfidenceThreshold": {
-          "type": "number",
-          "default": 0.7,
-          "minimum": 0.1,
-          "maximum": 1.0,
-          "description": "Confidence threshold for AI change detection (0.1-1.0)"
-        "cursorGit.aiConfidenceThreshold": {
-          "type": "number",
-          "default": 0.7,
-          "minimum": 0.1,
-          "maximum": 1.0,
-          "description": "Confidence threshold for AI change detection (0.1-1.0)"
-          "type": "number",
-        },
-        "cursorGit.aiConfidenceThreshold": {
-          "type": "number",
-          "default": 0.7,
-          "minimum": 0.1,
-          "maximum": 1.0,
-          "description": "Confidence threshold for AI change detection (0.1-1.0)"
-          "default": 20,
-        },
-        "cursorGit.aiConfidenceThreshold": {
-          "type": "number",
-          "default": 0.7,
-          "minimum": 0.1,
-          "maximum": 1.0,
-          "description": "Confidence threshold for AI change detection (0.1-1.0)"
-          "description": "Minimum number of characters changed to consider it an AI-generated change"
-        },
-        "cursorGit.aiConfidenceThreshold": {
-          "type": "number",
-          "default": 0.7,
-          "minimum": 0.1,
-          "maximum": 1.0,
-          "description": "Confidence threshold for AI change detection (0.1-1.0)"
+        "cursorGit.showNotifications": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show notifications for AI-generated commits"
         }
-        },
-        "cursorGit.aiConfidenceThreshold": {
-          "type": "number",
-          "default": 0.7,
-          "minimum": 0.1,
-          "maximum": 1.0,
-          "description": "Confidence threshold for AI change detection (0.1-1.0)"
       }
     },
     "views": {
