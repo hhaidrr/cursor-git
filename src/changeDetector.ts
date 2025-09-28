@@ -74,7 +74,7 @@ export class ChangeDetector {
 
     private shouldAutoCommit(): boolean {
         const config = vscode.workspace.getConfiguration('cursorGit');
-        const frequency = config.get<string>('commitFrequency', 'immediate');
+        const frequency = config.get<string>('commitFrequency', 'onSave');
         
         switch (frequency) {
             case 'immediate':
@@ -124,11 +124,16 @@ export class ChangeDetector {
             return;
         }
 
+        // Get configuration values
+        const config = vscode.workspace.getConfiguration('cursorGit');
+        const sessionTimeout = config.get<number>('sessionTimeout', 2000);
+        const minCharacters = config.get<number>('minCharactersForAnalysis', 10);
+        
         // Calculate time since last change
         const timeSinceLastChange = timestamp - this.currentSession.startTime;
         
-        // If more than 2 seconds have passed, start a new session
-        if (timeSinceLastChange > 2000) {
+        // If more than session timeout has passed, start a new session
+        if (timeSinceLastChange > sessionTimeout) {
             this.finalizeCurrentSession();
             this.currentSession = {
                 startTime: timestamp,
@@ -141,15 +146,16 @@ export class ChangeDetector {
         this.currentSession.characters += textLength;
 
         // If session has enough data, analyze typing speed
-        if (this.currentSession.characters >= 10) { // Minimum 10 characters for analysis
+        if (this.currentSession.characters >= minCharacters) {
             const wpm = this.calculateWPM(this.currentSession.characters, timeSinceLastChange);
+            const speedThreshold = config.get<number>('typingSpeedThreshold', 150);
             
-            if (wpm > 150) {
+            if (wpm > speedThreshold) {
                 this.isHumanTyping = false; // AI typing detected
-                console.log(`AI typing detected: ${wpm.toFixed(1)} WPM`);
+                console.log(`AI typing detected: ${wpm.toFixed(1)} WPM (threshold: ${speedThreshold})`);
             } else {
                 this.isHumanTyping = true; // Human typing confirmed
-                console.log(`Human typing confirmed: ${wpm.toFixed(1)} WPM`);
+                console.log(`Human typing confirmed: ${wpm.toFixed(1)} WPM (threshold: ${speedThreshold})`);
             }
         }
     }
