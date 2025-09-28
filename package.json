@@ -2,7 +2,7 @@
   "name": "cursor-git",
   "displayName": "Cursor Git",
   "description": "Automatically commit AI-generated changes in Cursor IDE",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "publisher": "cursor-git",
   "engines": {
     "vscode": "^1.74.0"
@@ -63,13 +63,21 @@
         },
         "cursorGit.commitFrequency": {
           "type": "string",
-          "enum": ["immediate", "onSave", "manual"],
+          "enum": [
+            "immediate",
+            "onSave",
+            "manual"
+          ],
           "default": "immediate",
           "description": "When to commit changes"
         },
         "cursorGit.excludePatterns": {
           "type": "array",
-          "default": ["*.log", "*.tmp", "node_modules/**"],
+          "default": [
+            "*.log",
+            "*.tmp",
+            "node_modules/**"
+          ],
           "description": "File patterns to exclude from auto-commit"
         },
         "cursorGit.aiAuthorSuffix": {
@@ -87,24 +95,24 @@
     "views": {
       "explorer": [
         {
-        "id": "cursorGitView",
-        "name": "Cursor Git",
-        "when": "cursorGit.enabled"
+          "id": "cursorGitView",
+          "name": "Cursor Git",
+          "when": "cursorGit.enabled"
         }
       ]
     },
     "menus": {
       "scm/title": [
         {
-        "command": "cursorGit.commitNow",
-        "when": "cursorGit.enabled",
+          "command": "cursorGit.commitNow",
+          "when": "cursorGit.enabled",
           "group": "navigation"
         }
       ],
       "editor/context": [
         {
-        "command": "cursorGit.commitNow",
-        "when": "cursorGit.enabled",
+          "command": "cursorGit.commitNow",
+          "when": "cursorGit.enabled",
           "group": "cursorGit"
         }
       ]
