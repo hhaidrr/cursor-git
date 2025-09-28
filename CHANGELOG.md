@@ -18,7 +18,7 @@ All notable changes to the "cursor-git" extension will be documented in this fil
 
 ### Features
 - AI Change Detection: Automatically detects when AI generates code changes
-- Smart Commit Messages: Generates descriptive commit messages
+- Smart Commit Messages: Generates conventional commit messages (feat, fix, docs, etc.)
 - Chat Interface: Conversational interface for git operations
 - Configurable: Customize commit behavior and message templates
 - Git Integration: Full Git workflow integration
