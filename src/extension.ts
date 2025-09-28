@@ -33,7 +33,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     const commitNowCommand = vscode.commands.registerCommand('cursorGit.commitNow', async () => {
         try {
-            const result = await gitManager.commitChanges();
+            const result = await gitManager.stageAndCommit();
             if (result.success) {
                 vscode.window.showInformationMessage(`Committed: ${result.message}`);
                 chatInterface.addMessage({
