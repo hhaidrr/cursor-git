@@ -51,6 +51,16 @@
         "command": "cursorGit.checkCursorAI",
         "title": "Check Cursor AI Commands",
         "category": "Cursor Git"
+      },
+      {
+        "command": "cursorGit.checkTypingStatus",
+        "title": "Check Typing Status",
+        "category": "Cursor Git"
+      },
+      {
+        "command": "cursorGit.setAIFlag",
+        "title": "Set AI Flag",
+        "category": "Cursor Git"
       }
     ],
     "configuration": {
