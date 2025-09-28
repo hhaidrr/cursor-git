@@ -36,6 +36,11 @@
         "command": "cursorGit.showStatus",
         "title": "Show Status",
         "category": "Cursor Git"
+      },
+      {
+        "command": "cursorGit.testCursorAI",
+        "title": "Test Cursor AI Commit Generation",
+        "category": "Cursor Git"
       }
     ],
     "configuration": {
