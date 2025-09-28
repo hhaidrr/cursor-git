@@ -48,7 +48,7 @@
         },
         "cursorGit.commitMessageTemplate": {
           "type": "string",
-          "default": "AI: {description}",
+          "default": "feat: {description}",
           "description": "Template for commit messages. Use {description} for change description"
         },
         "cursorGit.autoStage": {
