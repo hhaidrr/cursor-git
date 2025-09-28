@@ -6,6 +6,16 @@ export class ChangeDetector {
     private disposables: vscode.Disposable[] = [];
     private lastCommitHash: string | null = null;
     private isEnabled: boolean = true;
+    
+    // AI Command Tracking
+    private aiCommandExecuted: boolean = false;
+    private aiCommandTimeout: NodeJS.Timeout | null = null;
+    private lastAICommandTime: number = 0;
+    private recentAICommands: string[] = [];
+    
+    // Change Pattern Tracking
+    private recentChanges: Array<{timestamp: number, size: number, hasNewlines: boolean}> = [];
+    private typingPattern: Array<{timestamp: number, interval: number}> = [];
 
     constructor(gitManager: GitManager) {
         this.gitManager = gitManager;
@@ -22,14 +32,14 @@ export class ChangeDetector {
             }
         });
 
-        // Note: Removed file save listener - only commit on AI-generated changes
-        // const fileChangeListener = vscode.workspace.onDidSaveTextDocument(async (document) => {
-        //     if (this.isEnabled && this.shouldAutoCommit()) {
-        //         await this.handleFileChange(document);
-        //     }
-        // });
+        // Set up command execution listener to detect AI commands
+        const commandListener = vscode.commands.registerCommand('*', async (command, ...args) => {
+            if (this.isAIGeneratedCommand(command)) {
+                this.flagAIGenerated(command);
+            }
+        });
 
-        // Set up AI completion listener (if available)
+        // Set up AI completion listener
         const aiCompletionListener = vscode.workspace.onDidChangeTextDocument(async (event) => {
             if (this.isEnabled && this.isAIGeneratedChange(event) && this.shouldAutoCommit()) {
                 // Debounce to avoid multiple commits for rapid changes
@@ -50,7 +60,7 @@ export class ChangeDetector {
 
         this.disposables.push(
             configChangeListener,
-            // fileChangeListener, // Removed - only commit on AI changes
+            commandListener,
             aiCompletionListener,
             cursorChangeListener
         );
@@ -71,23 +81,11 @@ export class ChangeDetector {
             case 'immediate':
                 return true;
             case 'onSave':
-                return true; // This is handled by onDidSaveTextDocument
+                return true;
             case 'manual':
                 return false;
             default:
                 return true;
-        }
-    }
-
-    private async handleFileChange(document: vscode.TextDocument): Promise<void> {
-        try {
-            const result = await this.gitManager.stageAndCommit();
-            if (result.success) {
-                this.lastCommitHash = result.hash || null;
-                this.showCommitNotification(result.message);
-            }
-        } catch (error) {
-            console.error('Error handling file change:', error);
         }
     }
 
@@ -109,45 +107,211 @@ export class ChangeDetector {
         }
     }
 
+    private isAIGeneratedCommand(command: string): boolean {
+        // Comprehensive list of Cursor AI commands
+        const aiCommands = [
+            'cursor.chat',
+            'cursor.complete',
+            'cursor.accept',
+            'cursor.reject',
+            'cursor.generateGitCommitMessage',
+            'cursor.ask',
+            'cursor.explain',
+            'cursor.fix',
+            'cursor.refactor',
+            'cursor.optimize',
+            'cursor.generate',
+            'cursor.edit',
+            'cursor.rewrite',
+            'cursor.improve',
+            'cursor.add',
+            'cursor.remove',
+            'cursor.replace',
+            'cursor.insert',
+            'cursor.append',
+            'cursor.prepend',
+            'cursor.continue',
+            'cursor.stop',
+            'cursor.undo',
+            'cursor.redo',
+            'cursor.acceptSuggestion',
+            'cursor.rejectSuggestion',
+            'cursor.showSuggestion',
+            'cursor.hideSuggestion',
+            'cursor.nextSuggestion',
+            'cursor.previousSuggestion',
+            'cursor.toggleSuggestion',
+            'cursor.acceptWord',
+            'cursor.acceptLine',
+            'cursor.acceptAll',
+            'cursor.rejectAll',
+            'cursor.acceptPartial',
+            'cursor.rejectPartial'
+        ];
+
+        return aiCommands.some(aiCmd => 
+            command.includes(aiCmd) || 
+            command.startsWith(aiCmd) ||
+            command.endsWith(aiCmd)
+        );
+    }
+
+    private flagAIGenerated(command: string): void {
+        const now = Date.now();
+        this.aiCommandExecuted = true;
+        this.lastAICommandTime = now;
+        
+        // Track recent AI commands (keep last 10)
+        this.recentAICommands.unshift(command);
+        if (this.recentAICommands.length > 10) {
+            this.recentAICommands.pop();
+        }
+        
+        // Clear any existing timeout
+        if (this.aiCommandTimeout) {
+            clearTimeout(this.aiCommandTimeout);
+        }
+        
+        // Reset flag after 10 seconds (AI commands can take time to complete)
+        this.aiCommandTimeout = setTimeout(() => {
+            this.aiCommandExecuted = false;
+        }, 10000);
+        
+        console.log(`AI command detected: ${command}`);
+    }
+
     private isAIGeneratedChange(event: any): boolean {
-        // This is a heuristic to detect AI-generated changes
-        // In a real implementation, you might need to hook into Cursor's AI API
+        const now = Date.now();
         
         // Skip undo operations
         if (event.kind === vscode.TextDocumentChangeReason.Undo) {
             return false;
         }
 
-        // Check if the change is significant (more than a few characters)
+        // PRIMARY DETECTION: Recent AI command execution
+        if (this.aiCommandExecuted && (now - this.lastAICommandTime) < 10000) {
+            console.log('AI change detected: recent AI command execution');
+            return true;
+        }
+
+        // Track change patterns for analysis
+        this.trackChangePattern(event, now);
+
+        // SECONDARY DETECTION: Pattern-based heuristics
+        return this.analyzeChangePatterns(event, now);
+    }
+
+    private trackChangePattern(event: any, timestamp: number): void {
         if (event.contentChanges && event.contentChanges.length > 0) {
             const totalChanges = event.contentChanges.reduce((sum: number, change: any) => {
                 return sum + (change.text?.length || 0);
             }, 0);
             
-            // Get configuration for minimum change threshold
-            const config = vscode.workspace.getConfiguration('cursorGit');
-            const minChangeThreshold = config.get<number>('aiChangeThreshold', 20);
+            const hasNewlines = event.contentChanges.some((change: any) => {
+                return change.text && change.text.includes('\n');
+            });
+
+            // Track recent changes (keep last 20)
+            this.recentChanges.unshift({
+                timestamp,
+                size: totalChanges,
+                hasNewlines
+            });
+            if (this.recentChanges.length > 20) {
+                this.recentChanges.pop();
+            }
+
+            // Track typing intervals
+            if (this.typingPattern.length > 0) {
+                const lastTyping = this.typingPattern[0];
+                const interval = timestamp - lastTyping.timestamp;
+                this.typingPattern.unshift({ timestamp, interval });
+                if (this.typingPattern.length > 10) {
+                    this.typingPattern.pop();
+                }
+            } else {
+                this.typingPattern.push({ timestamp, interval: 0 });
+            }
+        }
+    }
+
+    private analyzeChangePatterns(event: any, now: number): boolean {
+        const config = vscode.workspace.getConfiguration('cursorGit');
+        const minChangeThreshold = config.get<number>('aiChangeThreshold', 20);
+        const aiConfidenceThreshold = config.get<number>('aiConfidenceThreshold', 0.7);
+
+        // Calculate AI confidence score
+        let confidence = 0;
+
+        // 1. Size-based detection
+        if (event.contentChanges && event.contentChanges.length > 0) {
+            const totalChanges = event.contentChanges.reduce((sum: number, change: any) => {
+                return sum + (change.text?.length || 0);
+            }, 0);
             
-            // If more than threshold characters changed, likely AI-generated
             if (totalChanges > minChangeThreshold) {
-                console.log(`AI change detected: ${totalChanges} characters changed`);
-                return true;
+                confidence += 0.3;
+                console.log(`Size-based AI detection: ${totalChanges} characters`);
             }
         }
 
-        // Check for multi-line changes (AI often generates multiple lines)
+        // 2. Multi-line detection
         if (event.contentChanges && event.contentChanges.length > 0) {
             const hasMultiLineChanges = event.contentChanges.some((change: any) => {
                 return change.text && change.text.includes('\n');
             });
             
             if (hasMultiLineChanges) {
-                console.log('AI change detected: multi-line change');
-                return true;
+                confidence += 0.2;
+                console.log('Multi-line AI detection');
             }
         }
 
-        return false;
+        // 3. Rapid change detection (AI often makes multiple rapid changes)
+        const recentRapidChanges = this.recentChanges.filter(change => 
+            (now - change.timestamp) < 2000 && change.size > 10
+        );
+        if (recentRapidChanges.length >= 3) {
+            confidence += 0.2;
+            console.log('Rapid change AI detection');
+        }
+
+        // 4. Typing pattern analysis (AI changes are usually faster than human typing)
+        if (this.typingPattern.length >= 3) {
+            const avgInterval = this.typingPattern.slice(0, 3).reduce((sum, pattern) => 
+                sum + pattern.interval, 0) / 3;
+            
+            if (avgInterval < 100) { // Less than 100ms between changes
+                confidence += 0.2;
+                console.log('Fast typing pattern AI detection');
+            }
+        }
+
+        // 5. Large block changes (AI often generates complete functions/blocks)
+        if (event.contentChanges && event.contentChanges.length > 0) {
+            const hasLargeBlock = event.contentChanges.some((change: any) => {
+                return change.text && (
+                    change.text.includes('function ') ||
+                    change.text.includes('class ') ||
+                    change.text.includes('interface ') ||
+                    change.text.includes('const ') ||
+                    change.text.includes('let ') ||
+                    change.text.includes('var ')
+                );
+            });
+            
+            if (hasLargeBlock) {
+                confidence += 0.1;
+                console.log('Large block AI detection');
+            }
+        }
+
+        const isAI = confidence >= aiConfidenceThreshold;
+        if (isAI) {
+            console.log(`AI change detected with confidence: ${confidence.toFixed(2)}`);
+        }
+
+        return isAI;
     }
 
     private showCommitNotification(message: string): void {
@@ -187,5 +351,8 @@ export class ChangeDetector {
 
     dispose(): void {
         this.disposables.forEach(d => d.dispose());
+        if (this.aiCommandTimeout) {
+            clearTimeout(this.aiCommandTimeout);
+        }
     }
 }
