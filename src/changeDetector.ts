@@ -113,19 +113,38 @@ export class ChangeDetector {
         // This is a heuristic to detect AI-generated changes
         // In a real implementation, you might need to hook into Cursor's AI API
         
+        // Skip undo operations
+        if (event.kind === vscode.TextDocumentChangeReason.Undo) {
+            return false;
+        }
+
         // Check if the change is significant (more than a few characters)
         if (event.contentChanges && event.contentChanges.length > 0) {
             const totalChanges = event.contentChanges.reduce((sum: number, change: any) => {
                 return sum + (change.text?.length || 0);
             }, 0);
             
-            // If more than 10 characters changed, likely AI-generated
-            return totalChanges > 10;
+            // Get configuration for minimum change threshold
+            const config = vscode.workspace.getConfiguration('cursorGit');
+            const minChangeThreshold = config.get<number>('aiChangeThreshold', 20);
+            
+            // If more than threshold characters changed, likely AI-generated
+            if (totalChanges > minChangeThreshold) {
+                console.log(`AI change detected: ${totalChanges} characters changed`);
+                return true;
+            }
         }
 
-        // Check for rapid successive changes (AI often makes multiple edits)
-        if (event.kind === vscode.TextDocumentChangeReason.Undo) {
-            return false; // Undo operations are not AI-generated
+        // Check for multi-line changes (AI often generates multiple lines)
+        if (event.contentChanges && event.contentChanges.length > 0) {
+            const hasMultiLineChanges = event.contentChanges.some((change: any) => {
+                return change.text && change.text.includes('\n');
+            });
+            
+            if (hasMultiLineChanges) {
+                console.log('AI change detected: multi-line change');
+                return true;
+            }
         }
 
         return false;
